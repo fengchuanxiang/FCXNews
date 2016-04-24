@@ -81,7 +81,7 @@
     [_dbQueue inDatabase:^(FMDatabase *db) {
         NSString *sql=[NSString stringWithFormat:@"UPDATE finance set content = '%@', url = '%@', relatedDocs = '%@' WHERE docid = '%@'", model.content, model.url, model.relatedDocs, model.docid];
         BOOL update = [db executeUpdate:sql];
-        DBLOG(@"update %d", update);
+//        DBLOG(@"update %d", update);
     }];
 }
 

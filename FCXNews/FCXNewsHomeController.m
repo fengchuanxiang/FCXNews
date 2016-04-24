@@ -11,7 +11,6 @@
 #import "UIImageView+WebCache.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "AFNetWorking.h"
-#import "GDTNativeAd.h"
 #import "FCXNewsDBManager.h"
 #import "UIScrollView+FCXRefresh.h"
 #import "FCXRefreshFooterView.h"

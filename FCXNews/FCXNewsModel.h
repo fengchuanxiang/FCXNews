@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class GDTNativeAd;
+#import "GDTNativeAd.h"
 
 @interface FCXNewsModel : NSObject
 
