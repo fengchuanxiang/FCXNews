@@ -10,6 +10,7 @@
 
 @interface FCXNewsMoreController : UIViewController
 
+@property (nonatomic, copy) NSString *appID;
 @property (nonatomic, copy) NSString *admobID;
 
 @end

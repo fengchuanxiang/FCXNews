@@ -450,7 +450,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     
     UIImage *titleImage = [UIImage imageNamed:@"nav_logo"];
     UIImage *midImage = [UIImage imageNamed:@"detail_share_title"];
-    UIImage *QRImg = [self createQRCodeWithText:[NSString stringWithFormat: @"https://itunes.apple.com/app/id%@", [FCXOnlineConfig fcxGetConfigParams:@"share_AppID" defaultValue:APPID]] size:150.f];
+    UIImage *QRImg = [self createQRCodeWithText:[NSString stringWithFormat: @"https://itunes.apple.com/app/id%@", [FCXOnlineConfig fcxGetConfigParams:@"share_AppID" defaultValue:self.appID]] size:150.f];
     UIImage *logoImage = [UIImage imageNamed:@"detail_share_icon"];
     
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(SCREEN_WIDTH, totalHeight), NO, scale);

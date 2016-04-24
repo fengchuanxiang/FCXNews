@@ -17,6 +17,7 @@
 #import "FCXOnlineConfig.h"
 #import "MobClick.h"
 
+
 @interface FCXNewsMoreController () <UITableViewDelegate, UITableViewDataSource>
 {
     UITableView *_tableView;
@@ -34,7 +35,6 @@
     CGFloat adHeight = 0;
     if ([[FCXOnlineConfig fcxGetConfigParams:@"showAdmob" defaultValue:@"1"] boolValue]) {
         adHeight = 50;
-        [self showAdmobBanner:CGRectMake(0, SCREEN_HEIGHT - 64 - 50 - 49, SCREEN_WIDTH, 50) adUnitID:[FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:self.admobID]];
     }
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64 - adHeight) style:UITableViewStyleGrouped];
@@ -148,7 +148,7 @@
             shareManager.presentedController = self;
             shareManager.shareTitle = @"知科技大事，他们都用互联网头条！";
             shareManager.shareContent = @"第一时间推送互联网热点资讯，从此变身互联网达人。";
-            shareManager.shareURL = [NSString stringWithFormat:@"http://itunes.apple.com/cn/app/id%@?mt=8", APPID];
+            shareManager.shareURL = [NSString stringWithFormat:@"http://itunes.apple.com/cn/app/id%@?mt=8", self.appID];
             NSDictionary *infoPlist = [[NSBundle mainBundle] infoDictionary];
             NSString *icon = [[infoPlist valueForKeyPath:@"CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles"] lastObject];
             shareManager.shareImage = [UIImage imageNamed:icon];
@@ -160,7 +160,7 @@
         {
             if(indexPath.row == 0){//去App Store给鲨鱼相机评分
                 [MobClick event:@"设置" label:@"评分"];
-                [FCXRating goRating:APPID];
+                [FCXRating goRating:self.appID];
             }else if (indexPath.row == 1){//意见反馈
                 [MobClick event:@"设置" label:@"意见反馈"];
                 //                [self.navigationController pushViewController:[UMFeedback feedbackViewController]
