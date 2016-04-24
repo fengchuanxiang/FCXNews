@@ -13,6 +13,7 @@
 #import "JZAlbumViewController.h"
 #import "UIButton+Block.h"
 #import "AlbumManager.h"
+#import "FCXDefine.h"
 
 @interface JZAlbumViewController ()<UIScrollViewDelegate,PhotoViewDelegate>
 {

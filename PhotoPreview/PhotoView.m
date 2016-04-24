@@ -92,10 +92,12 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex != actionSheet.cancelButtonIndex) {
         if (self.imageView.image) {
+            
+            NSString *displayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
 
-            [[AlbumManager sharedAlbumManager] saveImageToAlbum:self.imageView.image albumName:APP_DISPLAYNAME withCompletionBlock:^(NSError *error) {
+            [[AlbumManager sharedAlbumManager] saveImageToAlbum:self.imageView.image albumName:displayName withCompletionBlock:^(NSError *error) {
                 if (error) {
-                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"保存失败" message:[NSString stringWithFormat:@"您可以打开 设置 - 隐私 - 照片 找到%@，查看%@是否有访问相册的权限，如果没有，打开即可。", APP_DISPLAYNAME, APP_DISPLAYNAME] delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"保存失败" message:[NSString stringWithFormat:@"您可以打开 设置 - 隐私 - 照片 找到%@，查看%@是否有访问相册的权限，如果没有，打开即可。", displayName, displayName] delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
                     [alertView show];
                     
                 }else{
@@ -202,7 +204,7 @@
         CGFloat imageWidth = _scrollView.frame.size.width * scale;
         CGFloat imageHeight = _imageView.image.size.height * (imageWidth/_imageView.image.size.width);
         
-        CGFloat heightScale = imageHeight/SCREEN_HEIGHT;
+        CGFloat heightScale = imageHeight / [UIScreen mainScreen].bounds.size.height;
 //        NSLog(@"scale %f", heightScale);
         heightScale = MAX(1.5, heightScale);
         zoomRect.size.height = _scrollView.frame.size.height/heightScale;
