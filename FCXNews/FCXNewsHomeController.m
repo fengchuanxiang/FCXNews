@@ -16,6 +16,9 @@
 #import "UIScrollView+FCXRefresh.h"
 #import "FCXRefreshFooterView.h"
 #import "FCXNewsDetailController.h"
+#import "FCXDefine.h"
+#import "MobClick.h"
+#import "FCXOnlineConfig.h"
 
 static NSString *const FCXNewsHomeCellIdentifier = @"FCXNewsHomeCellIdentifier";
 
@@ -377,6 +380,8 @@ static NSString *const FCXNewsHomeCellIdentifier = @"FCXNewsHomeCellIdentifier";
         FCXNewsModel *dataModel = _dataArray[indexPath.row];
         FCXNewsDetailController *detailVC = [[FCXNewsDetailController alloc] init];
         detailVC.model = dataModel;
+        detailVC.admobID = self.admobID;
+        detailVC.appID = self.appID;
         [MobClick event:@"列表点击" label:dataModel.title];
         [self.navigationController pushViewController:detailVC animated:YES];
     }

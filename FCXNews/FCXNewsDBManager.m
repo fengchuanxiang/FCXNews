@@ -33,7 +33,7 @@
         //沙盒路径
         NSString * dbPath = NSHomeDirectory();
         dbPath = [dbPath stringByAppendingPathComponent:@"Library/finance.db"];
-        DBLOG(@"======== %@", dbPath);
+//        DBLOG(@"======== %@", dbPath);
         _dbQueue = [FMDatabaseQueue databaseQueueWithPath:dbPath];
         
         [_dbQueue inDatabase:^(FMDatabase *db) {
@@ -41,9 +41,9 @@
             NSString *creatTableSql = @"CREATE TABLE IF NOT EXISTS finance (serial integer  Primary Key Autoincrement, title TEXT(1024) DEFAULT NULL, docid TEXT(1024) DEFAULT NULL, url TEXT(1024) DEFAULT NULL, date TEXT(1024) DEFAULT NULL, images TEXT(1024) DEFAULT NULL, source TEXT(1024) DEFAULT NULL, content TEXT(8192) DEFAULT NULL, relatedDocs TEXT(8192) DEFAULT NULL)";
             
             //    执行语句，创建user
-            BOOL createUserTable = [db executeUpdate:creatTableSql];
-            
-            DBLOG(@"createUserTable success = %d", createUserTable);
+            [db executeUpdate:creatTableSql];
+//            BOOL createUserTable = [db executeUpdate:creatTableSql];
+//            DBLOG(@"createUserTable success = %d", createUserTable);
             
         }];
     }
@@ -64,7 +64,7 @@
         FMResultSet * rs = [db executeQuery:sq];
         
         if ([rs next]) {
-            DBLOG(@"exist");
+//            DBLOG(@"exist");
         }else {
             
             NSString *sql=[NSString stringWithFormat:@"INSERT INTO finance(title, docid, url, date, images, source, content) VALUES ('%@', '%@', '%@', '%@', '%@', '%@', '%@')", model.title, model.docid, model.url, model.date, model.images, model.source, model.content];
@@ -126,7 +126,7 @@
     [_dbQueue inDatabase:^(FMDatabase *db) {
         NSString *sql=[NSString stringWithFormat:@"delete from finance"];
         if ([db executeUpdate:sql]) {
-            DBLOG(@"delete success");
+//            DBLOG(@"delete success");
         }
     }];
 }

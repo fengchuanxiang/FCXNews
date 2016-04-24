@@ -13,6 +13,9 @@
 #import "FCXRating.h"
 #import "MBProgressHUD.h"
 #import "FCXNewsDBManager.h"
+#import "FCXDefine.h"
+#import "FCXOnlineConfig.h"
+#import "MobClick.h"
 
 @interface FCXNewsMoreController () <UITableViewDelegate, UITableViewDataSource>
 {
@@ -31,7 +34,7 @@
     CGFloat adHeight = 0;
     if ([[FCXOnlineConfig fcxGetConfigParams:@"showAdmob" defaultValue:@"1"] boolValue]) {
         adHeight = 50;
-        [self showAdmobBanner:CGRectMake(0, SCREEN_HEIGHT - 64 - 50 - 49, SCREEN_WIDTH, 50) adUnitID:[FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:ADMOBID]];
+        [self showAdmobBanner:CGRectMake(0, SCREEN_HEIGHT - 64 - 50 - 49, SCREEN_WIDTH, 50) adUnitID:[FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:self.admobID]];
     }
     
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64 - adHeight) style:UITableViewStyleGrouped];

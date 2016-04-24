@@ -9,7 +9,6 @@
 #import "FCXNewsDetailController.h"
 #import "AFNetWorking.h"
 #import "FCXNewsDBManager.h"
-#import "FCXNewsModel.h"
 #import "GDTNativeAd.h"
 #import "FCXRating.h"
 #import "UIImageView+WebCache.h"
@@ -20,6 +19,9 @@
 #import "FCXShareManager.h"
 #import "UIButton+Block.h"
 #import "FCXWebViewController.h"
+#import "FCXDefine.h"
+#import "FCXOnlineConfig.h"
+#import "MobClick.h"
 
 static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
 #define BGCOLOR UICOLOR_FROMRGB(0xf7f7f7)
@@ -104,7 +106,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     self.navigationItem.rightBarButtonItem = rightItem;
     
     _webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64)];
-    _webView.backgroundColor = BGCOLOR;
+    _webView.backgroundColor = UICOLOR_FROMRGB(0xf7f7f7);
     _webView.delegate = self;
     _webView.userInteractionEnabled = YES;
     _webView.scrollView.userInteractionEnabled = YES;
@@ -114,7 +116,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     [self.view addSubview:_webView];
     
     _shareWebView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64)];
-    _shareWebView.backgroundColor = BGCOLOR;
+    _shareWebView.backgroundColor = _webView.backgroundColor;
     _shareWebView.delegate = self;
     _shareWebView.dataDetectorTypes = UIDataDetectorTypeNone;
     
@@ -125,7 +127,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
         [_shareWebView loadRequest:request];
         
         [self setupAd];
-        [FCXRating startRating:APPID];
+        [FCXRating startRating:self.appID];
         return;
     }
     
@@ -170,7 +172,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     }
     
     [self setupAd];
-    [FCXRating startRating:APPID];
+    [FCXRating startRating:self.appID];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -231,7 +233,6 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     
     // 设置虚线颜色为blackColor
     [shapeLayer setStrokeColor:[UICOLOR_FROMRGB(0xc8c8c8) CGColor]];
-    //    [shapeLayer setStrokeColor:[[UIColor colorWithRed:223/255.0 green:223/255.0 blue:223/255.0 alpha:1.0f] CGColor]];
     
     // 3.0f设置虚线的宽度
     [shapeLayer setLineWidth:1.0f];
@@ -351,7 +352,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     [btn defaultControlEventsWithHandler:^(UIButton *button) {
         FCXWebViewController *webView = [[FCXWebViewController alloc] init];
         webView.urlString = weakSelf.model.url;
-        webView.admobID = ADMOBID;
+        webView.admobID = self.admobID;
         webView.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_logo"]];
         [weakSelf.navigationController pushViewController:webView animated:YES];
     }];
@@ -442,7 +443,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     CGRect rect = CGRectMake(0.0f, 0.0f, SCREEN_WIDTH, 64);
     UIGraphicsBeginImageContextWithOptions(rect.size, NO, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetFillColorWithColor(context, [FINANCE_NAVIGATIONBARCOLOR CGColor]);
+    CGContextSetFillColorWithColor(context, [self.navigationController.navigationBar.barTintColor CGColor]);
     CGContextFillRect(context, rect);
     UIImage *barImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -451,7 +452,6 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     UIImage *midImage = [UIImage imageNamed:@"detail_share_title"];
     UIImage *QRImg = [self createQRCodeWithText:[NSString stringWithFormat: @"https://itunes.apple.com/app/id%@", [FCXOnlineConfig fcxGetConfigParams:@"share_AppID" defaultValue:APPID]] size:150.f];
     UIImage *logoImage = [UIImage imageNamed:@"detail_share_icon"];
-    
     
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(SCREEN_WIDTH, totalHeight), NO, scale);
     [barImage drawInRect:CGRectMake(0, 0, SCREEN_WIDTH, 64)];
@@ -618,7 +618,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
             if ([[FCXOnlineConfig fcxGetConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
                 source = dict[@"source"];
             }else {
-                source = APP_DISPLAYNAME;
+                source =  [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
             }
             
             NSRange range = [content rangeOfString:@"type=thumbnai"];

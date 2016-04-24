@@ -8,10 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-@class FCXNewsModel;
+#import "FCXNewsModel.h"
 
 @interface FCXNewsDetailController : UIViewController
 
 @property (nonatomic, strong) FCXNewsModel *model;
+@property (nonatomic, copy) NSString *appID;
+@property (nonatomic, copy) NSString *admobID;
+
 
 @end
