@@ -12,7 +12,7 @@
 #import "GDTNativeAd.h"
 #import "FCXRating.h"
 #import "UIImageView+WebCache.h"
-#import "JZAlbumViewController.h"
+#import "FCXPictureBrowingView.h"
 #import "UIVIew+Frame.h"
 #import "WXApi.h"
 #import <TencentOpenAPI/QQApiInterface.h>
@@ -730,11 +730,10 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
         NSString *imageUrl = [requestString substringFromIndex:@"myweb:imageClick:".length];
         //        NSLog(@"image url=%@ index %d", imageUrl, [self.imageArray indexOfObject:imageUrl]);
         
-        JZAlbumViewController *controller = [[JZAlbumViewController alloc] init];
-        controller.imgArr = self.imageArray;
-        controller.currentIndex = [self.imageArray indexOfObject:imageUrl];
-        [self presentViewController:controller animated:NO completion:nil];
-        //        [self showImageWithURLStr:imageUrl];//显示图片
+        FCXPictureBrowingView *browingView = [[FCXPictureBrowingView alloc] init];
+        browingView.dataArray = self.imageArray;
+        browingView.currentIndex = [self.imageArray indexOfObject:imageUrl];
+        [browingView show];
         return NO;
     }
     return YES;

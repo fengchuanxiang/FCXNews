@@ -14,7 +14,8 @@ Pod::Spec.new do |s|
   s.platform     = :ios, "6.0"
   s.source       = { :git => "https://github.com/fengchuanxiang/FCXNews.git", :tag => "0.0.1" }
 
-  s.source_files  = "FCXNews/", "FCXRefreshView/", "PhotoPreview/"
+  s.source_files  = "FCXNews/", "FCXRefreshView/", "FCXPictureBrowing/"
+  s.resources = "FCXPictureBrowing/*.png", "FCXRefreshView/*.png"
 
   s.dependency "FMDB"
   s.dependency 'AFNetworking', '~> 3.0.4'
