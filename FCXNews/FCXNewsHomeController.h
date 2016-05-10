@@ -13,5 +13,6 @@
 @property (nonatomic, copy) NSString *channelID;
 @property (nonatomic, copy) NSString *appID;
 @property (nonatomic, copy) NSString *admobID;
+@property (nonatomic, strong) NSString *shareTitle;//!<第三方平台显示分享的标题
 
 @end

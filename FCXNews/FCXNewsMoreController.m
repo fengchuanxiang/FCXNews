@@ -146,8 +146,8 @@
             [MobClick event:@"设置" label:@"邀请好友"];
             FCXShareManager *shareManager = [FCXShareManager sharedManager];
             shareManager.presentedController = self;
-            shareManager.shareTitle = @"知科技大事，他们都用互联网头条！";
-            shareManager.shareContent = @"第一时间推送互联网热点资讯，从此变身互联网达人。";
+            shareManager.shareTitle = self.shareTitle;
+            shareManager.shareContent = self.shareContent;
             shareManager.shareURL = [NSString stringWithFormat:@"http://itunes.apple.com/cn/app/id%@?mt=8", self.appID];
             NSDictionary *infoPlist = [[NSBundle mainBundle] infoDictionary];
             NSString *icon = [[infoPlist valueForKeyPath:@"CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles"] lastObject];

@@ -406,7 +406,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     FCXShareManager *shareManager = [FCXShareManager sharedManager];
     shareManager.shareType = FCXShareTypeImage;
     shareManager.shareImage = [self getShareImage];
-    shareManager.shareTitle = @"知科技大事，他们都用互联网头条！";
+    shareManager.shareTitle = self.shareTitle;
     shareManager.presentedController = self;
     
     if (button.tag == FCXSharePlatformWXSession) {
@@ -587,6 +587,9 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
         FCXNewsModel *dataModel = _dataArray[indexPath.row];
         FCXNewsDetailController *detailVC = [[FCXNewsDetailController alloc] init];
         detailVC.model = dataModel;
+        detailVC.admobID = self.admobID;
+        detailVC.appID = self.appID;
+        detailVC.shareTitle = self.shareTitle;
         [MobClick event:@"详情页热门推荐点击" label:dataModel.title];
         [self.navigationController pushViewController:detailVC animated:YES];
     }

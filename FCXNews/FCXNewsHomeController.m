@@ -152,7 +152,7 @@ static NSString *const FCXNewsHomeCellIdentifier = @"FCXNewsHomeCellIdentifier";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"首页";
+    self.title = @"资讯";
     self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_logo"]];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -381,6 +381,7 @@ static NSString *const FCXNewsHomeCellIdentifier = @"FCXNewsHomeCellIdentifier";
         detailVC.model = dataModel;
         detailVC.admobID = self.admobID;
         detailVC.appID = self.appID;
+        detailVC.shareTitle = self.shareTitle;
         [MobClick event:@"列表点击" label:dataModel.title];
         [self.navigationController pushViewController:detailVC animated:YES];
     }
