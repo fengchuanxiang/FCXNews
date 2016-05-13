@@ -91,7 +91,9 @@
         if (!isCached) {
             [_hud hide:YES];
         }
-    
+        if (!image || !_imageView.image) {
+            return ;
+        }
         _imageView.frame = _scrollView.bounds;
         
         CGFloat Rw = _scrollView.frame.size.width/image.size.width;

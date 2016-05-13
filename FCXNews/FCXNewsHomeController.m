@@ -152,7 +152,6 @@ static NSString *const FCXNewsHomeCellIdentifier = @"FCXNewsHomeCellIdentifier";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"资讯";
     self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_logo"]];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.automaticallyAdjustsScrollViewInsets = NO;
