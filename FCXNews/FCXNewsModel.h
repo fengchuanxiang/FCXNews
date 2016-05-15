@@ -22,6 +22,7 @@
 @property (nonatomic, copy) NSString *source;//来源
 @property (nonatomic, copy) NSString *content;//html
 @property (nonatomic, copy) NSString *relatedDocs;//热门推荐
+@property (nonatomic, copy) NSString *cType;//卡片类型
 
 
 @property (nonatomic, copy) NSString *showDate;//发布时间

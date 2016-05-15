@@ -18,6 +18,7 @@
 #import "FCXDefine.h"
 #import "MobClick.h"
 #import "FCXOnlineConfig.h"
+#import "FCXWebViewController.h"
 
 static NSString *const FCXNewsHomeCellIdentifier = @"FCXNewsHomeCellIdentifier";
 
@@ -376,6 +377,19 @@ static NSString *const FCXNewsHomeCellIdentifier = @"FCXNewsHomeCellIdentifier";
     
     if (_dataArray.count > indexPath.row) {
         FCXNewsModel *dataModel = _dataArray[indexPath.row];
+        
+        if ([dataModel.cType isKindOfClass:[NSString class]] &&
+            [dataModel.cType isEqualToString:@"video"] &&
+            [[FCXOnlineConfig fcxGetConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
+            
+            FCXWebViewController *webView = [[FCXWebViewController alloc] init];
+            webView.urlString = dataModel.url;
+            webView.admobID = self.admobID;
+            webView.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_logo"]];
+            [self.navigationController pushViewController:webView animated:YES];
+            return;
+        }
+        
         FCXNewsDetailController *detailVC = [[FCXNewsDetailController alloc] init];
         detailVC.model = dataModel;
         detailVC.admobID = self.admobID;

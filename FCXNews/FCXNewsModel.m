@@ -23,6 +23,7 @@
         self.url = dict[@"url"];
         self.date = dict[@"date"];
         self.source = dict[@"source"];
+        self.cType = dict[@"ctype"];
         self.imagesArray = dict[@"images"];
         if ([self.imagesArray isKindOfClass:[NSArray class]]) {
             self.images = [self.imagesArray componentsJoinedByString:@","];

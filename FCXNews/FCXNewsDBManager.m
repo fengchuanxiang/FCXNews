@@ -38,7 +38,7 @@
         
         [_dbQueue inDatabase:^(FMDatabase *db) {
             //解梦详情
-            NSString *creatTableSql = @"CREATE TABLE IF NOT EXISTS finance (serial integer  Primary Key Autoincrement, title TEXT(1024) DEFAULT NULL, docid TEXT(1024) DEFAULT NULL, url TEXT(1024) DEFAULT NULL, date TEXT(1024) DEFAULT NULL, images TEXT(1024) DEFAULT NULL, source TEXT(1024) DEFAULT NULL, content TEXT(8192) DEFAULT NULL, relatedDocs TEXT(8192) DEFAULT NULL)";
+            NSString *creatTableSql = @"CREATE TABLE IF NOT EXISTS finance (serial integer  Primary Key Autoincrement, title TEXT(1024) DEFAULT NULL, docid TEXT(1024) DEFAULT NULL, url TEXT(1024) DEFAULT NULL, date TEXT(1024) DEFAULT NULL, images TEXT(1024) DEFAULT NULL, source TEXT(1024) DEFAULT NULL, content TEXT(8192) DEFAULT NULL, relatedDocs TEXT(8192) DEFAULT NULL, ctype TEXT(128) DEFAULT NULL)";
             
             //    执行语句，创建user
             [db executeUpdate:creatTableSql];
@@ -67,7 +67,7 @@
 //            DBLOG(@"exist");
         }else {
             
-            NSString *sql=[NSString stringWithFormat:@"INSERT INTO finance(title, docid, url, date, images, source, content) VALUES ('%@', '%@', '%@', '%@', '%@', '%@', '%@')", model.title, model.docid, model.url, model.date, model.images, model.source, model.content];
+            NSString *sql=[NSString stringWithFormat:@"INSERT INTO finance(title, docid, url, date, images, source, content, ctype) VALUES ('%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@')", model.title, model.docid, model.url, model.date, model.images, model.source, model.content, model.cType];
             
             [db executeUpdate:sql];
         }
@@ -88,7 +88,7 @@
 - (NSMutableArray *)getFinanceDataArray:(NSInteger)offset {
     NSMutableArray *array = [NSMutableArray array];
     [_dbQueue inDatabase:^(FMDatabase *db) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT title, docid, url, date, images, source, content, relatedDocs from finance ORDER BY date DESC LIMIT 10 OFFSET %ld", (long)offset];
+        NSString *sql = [NSString stringWithFormat:@"SELECT title, docid, url, date, images, source, content, relatedDocs, ctype from finance ORDER BY date DESC LIMIT 10 OFFSET %ld", (long)offset];
         FMResultSet * rs = [db executeQuery:sql];
         while ([rs next]) {
             FCXNewsModel *model = [[FCXNewsModel alloc] init];
@@ -103,6 +103,7 @@
             if (model.images && model.images.length > 0) {
                 model.imagesArray = [model.images componentsSeparatedByString:@","];
             }
+            model.cType = [rs stringForColumn:@"ctype"];
             [array addObject:model];
         }
         [rs close];
@@ -112,7 +113,7 @@
 
 - (void)queryFinanceModel:(FCXNewsModel *)model {
     [_dbQueue inDatabase:^(FMDatabase *db) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT title, docid, url, date, images, source, content, relatedDocs from finance WHERE docid = '%@'", model.docid];
+        NSString *sql = [NSString stringWithFormat:@"SELECT content, relatedDocs from finance WHERE docid = '%@'", model.docid];
         FMResultSet * rs = [db executeQuery:sql];
         if ([rs next]) {
             model.content = [rs stringForColumn:@"content"];
