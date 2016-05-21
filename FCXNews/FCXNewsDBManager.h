@@ -14,13 +14,17 @@
 
 +(FCXNewsDBManager*)sharedManager;
 
-- (void)saveFinanceData:(NSArray *)array;
-- (void)saveFinanceModel:(FCXNewsModel *)model;
-- (void)updateFinanceModel:(FCXNewsModel *)model;
-- (void)queryFinanceModel:(FCXNewsModel *)model;
+- (void)saveNewsData:(NSArray *)array;
+- (void)saveNewsModel:(FCXNewsModel *)model;
+- (void)updateNewsModel:(FCXNewsModel *)model;
+- (void)queryNewsModel:(FCXNewsModel *)model;
 
-- (NSMutableArray *)getFinanceDataArray:(NSInteger)offset;
+- (NSMutableArray *)getNewsModelArray:(NSInteger)offset channelID:(NSString *)channelID;
+
+- (void)saveToTmpCache:(NSArray *)array channelID:(NSString *)channelID;
+- (NSMutableArray *)getNewsModelArrayFromTmpCache:(NSString *)channelID;
 
 - (void)clearCache;
+- (void)clearTmpCache;
 
 @end

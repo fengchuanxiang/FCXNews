@@ -10,7 +10,7 @@
 
 #import "GDTNativeAd.h"
 
-@interface FCXNewsModel : NSObject
+@interface FCXNewsModel : NSObject <NSSecureCoding>
 
 @property (nonatomic, unsafe_unretained) BOOL isAd;//是否是广告
 @property (nonatomic, copy) NSString *images;
@@ -23,6 +23,10 @@
 @property (nonatomic, copy) NSString *content;//html
 @property (nonatomic, copy) NSString *relatedDocs;//热门推荐
 @property (nonatomic, copy) NSString *cType;//卡片类型
+@property (nonatomic, copy) NSString *channelID;//频道ID
+@property (nonatomic, unsafe_unretained, getter=isRead) BOOL read;
+@property (nonatomic, unsafe_unretained, getter=isCollect) BOOL collect;
+
 
 
 @property (nonatomic, copy) NSString *showDate;//发布时间

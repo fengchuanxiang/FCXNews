@@ -12,9 +12,12 @@
 #import "FMDatabase.h"
 #import "FCXNewsModel.h"
 
+#define TABLENAME  @"FCXNews"
+
 @implementation FCXNewsDBManager
 {
     FMDatabaseQueue* _dbQueue;
+    NSMutableDictionary *_dataCountDict;
 }
 
 +(FCXNewsDBManager*)sharedManager {
@@ -30,20 +33,21 @@
 -(id)init
 {
     if (self = [super init]) {
+        _dataCountDict = [[NSMutableDictionary alloc] init];
         //沙盒路径
         NSString * dbPath = NSHomeDirectory();
-        dbPath = [dbPath stringByAppendingPathComponent:@"Library/finance.db"];
+        dbPath = [dbPath stringByAppendingPathComponent:@"Library/FCXNews.db"];
 //        DBLOG(@"======== %@", dbPath);
         _dbQueue = [FMDatabaseQueue databaseQueueWithPath:dbPath];
         
         [_dbQueue inDatabase:^(FMDatabase *db) {
             //解梦详情
-            NSString *creatTableSql = @"CREATE TABLE IF NOT EXISTS finance (serial integer  Primary Key Autoincrement, title TEXT(1024) DEFAULT NULL, docid TEXT(1024) DEFAULT NULL, url TEXT(1024) DEFAULT NULL, date TEXT(1024) DEFAULT NULL, images TEXT(1024) DEFAULT NULL, source TEXT(1024) DEFAULT NULL, content TEXT(8192) DEFAULT NULL, relatedDocs TEXT(8192) DEFAULT NULL, ctype TEXT(128) DEFAULT NULL)";
+            NSString *creatTableSql = [NSString stringWithFormat: @"CREATE TABLE IF NOT EXISTS %@ (serial integer  Primary Key Autoincrement, title TEXT(1024) DEFAULT NULL, docid TEXT(1024) DEFAULT NULL, url TEXT(1024) DEFAULT NULL, date TEXT(1024) DEFAULT NULL, images TEXT(1024) DEFAULT NULL, source TEXT(1024) DEFAULT NULL, content TEXT(8192) DEFAULT NULL, relatedDocs TEXT(8192) DEFAULT NULL, ctype TEXT(128) DEFAULT NULL, channelID TEXT(256) DEFAULT NULL, read INTEGER DEFAULT 0, collect INTEGER DEFAULT 0)", TABLENAME];
             
             //    执行语句，创建user
             [db executeUpdate:creatTableSql];
 //            BOOL createUserTable = [db executeUpdate:creatTableSql];
-//            DBLOG(@"createUserTable success = %d", createUserTable);
+//            NSLog(@"createUserTable success = %d", createUserTable);
             
         }];
     }
@@ -51,23 +55,23 @@
     return self;
 }
 
-- (void)saveFinanceData:(NSArray *)array {
+- (void)saveNewsData:(NSArray *)array {
     for (FCXNewsModel *model in array) {
-        [self saveFinanceModel:model];
+        [self saveNewsModel:model];
     }
 }
 
-- (void)saveFinanceModel:(FCXNewsModel *)model {
+- (void)saveNewsModel:(FCXNewsModel *)model {
     [_dbQueue inDatabase:^(FMDatabase *db) {
         
-        NSString *sq = [NSString stringWithFormat:@"SELECT title FROM finance WHERE docid = '%@'", model.docid];
+        NSString *sq = [NSString stringWithFormat:@"SELECT title FROM %@ WHERE docid = '%@' AND channelID = '%@'", TABLENAME, model.docid, model.channelID];
         FMResultSet * rs = [db executeQuery:sq];
         
         if ([rs next]) {
 //            DBLOG(@"exist");
         }else {
             
-            NSString *sql=[NSString stringWithFormat:@"INSERT INTO finance(title, docid, url, date, images, source, content, ctype) VALUES ('%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@')", model.title, model.docid, model.url, model.date, model.images, model.source, model.content, model.cType];
+            NSString *sql=[NSString stringWithFormat:@"INSERT INTO %@(title, docid, url, date, images, source, content, ctype, channelID) VALUES ('%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@')", TABLENAME, model.title, model.docid, model.url, model.date, model.images, model.source, model.content, model.cType, model.channelID];
             
             [db executeUpdate:sql];
         }
@@ -77,18 +81,18 @@
     
 }
 
-- (void)updateFinanceModel:(FCXNewsModel *)model {
+- (void)updateNewsModel:(FCXNewsModel *)model {
     [_dbQueue inDatabase:^(FMDatabase *db) {
-        NSString *sql=[NSString stringWithFormat:@"UPDATE finance set content = '%@', url = '%@', relatedDocs = '%@' WHERE docid = '%@'", model.content, model.url, model.relatedDocs, model.docid];
+        NSString *sql=[NSString stringWithFormat:@"UPDATE %@ set content = '%@', url = '%@', relatedDocs = '%@', read = %d, collect = %d  WHERE docid = '%@'", TABLENAME, model.content, model.url, model.relatedDocs, model.read, model.collect, model.docid];
         BOOL update = [db executeUpdate:sql];
 //        DBLOG(@"update %d", update);
     }];
 }
 
-- (NSMutableArray *)getFinanceDataArray:(NSInteger)offset {
+- (NSMutableArray *)getNewsModelArray:(NSInteger)offset channelID:(NSString *)channelID {
     NSMutableArray *array = [NSMutableArray array];
     [_dbQueue inDatabase:^(FMDatabase *db) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT title, docid, url, date, images, source, content, relatedDocs, ctype from finance ORDER BY date DESC LIMIT 10 OFFSET %ld", (long)offset];
+        NSString *sql = [NSString stringWithFormat:@"SELECT title, docid, url, date, images, source, content, relatedDocs, ctype, read, collect from %@  WHERE channelID = '%@' ORDER BY date DESC LIMIT 10 OFFSET %ld", TABLENAME, channelID, (long)offset];
         FMResultSet * rs = [db executeQuery:sql];
         while ([rs next]) {
             FCXNewsModel *model = [[FCXNewsModel alloc] init];
@@ -104,6 +108,8 @@
                 model.imagesArray = [model.images componentsSeparatedByString:@","];
             }
             model.cType = [rs stringForColumn:@"ctype"];
+            model.read = [rs boolForColumn:@"read"];
+            model.collect = [rs boolForColumn:@"collect"];
             [array addObject:model];
         }
         [rs close];
@@ -111,25 +117,56 @@
     return array;
 }
 
-- (void)queryFinanceModel:(FCXNewsModel *)model {
+- (void)queryNewsModel:(FCXNewsModel *)model {
     [_dbQueue inDatabase:^(FMDatabase *db) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT content, relatedDocs from finance WHERE docid = '%@'", model.docid];
+        NSString *sql = [NSString stringWithFormat:@"SELECT content, relatedDocs, read, collect from %@ WHERE docid = '%@'", TABLENAME, model.docid];
         FMResultSet * rs = [db executeQuery:sql];
         if ([rs next]) {
             model.content = [rs stringForColumn:@"content"];
             model.relatedDocs = [rs stringForColumn:@"relatedDocs"];
+            model.read = [rs boolForColumn:@"read"];
+            model.collect = [rs boolForColumn:@"collect"];
         }
         [rs close];
     }];
 }
 
+- (void)saveToTmpCache:(NSArray *)array channelID:(NSString *)channelID {
+    if (![array isKindOfClass:[NSArray class]] || array.count < 1) {
+        return;
+    }
+    [NSKeyedArchiver archiveRootObject:array toFile:[NSTemporaryDirectory() stringByAppendingPathComponent:channelID]];
+}
+
+- (NSMutableArray *)getNewsModelArrayFromTmpCache:(NSString *)channelID {
+    NSArray *array = [NSKeyedUnarchiver unarchiveObjectWithFile:[NSTemporaryDirectory() stringByAppendingPathComponent:channelID]];
+    if (![array isKindOfClass:[NSArray class]]) {
+        return nil;
+    }
+    for(FCXNewsModel *model in array) {
+        [self queryNewsModel:model];
+    }
+    return array;
+}
+
 - (void)clearCache {
+    [self clearTmpCache];
+    
     [_dbQueue inDatabase:^(FMDatabase *db) {
-        NSString *sql=[NSString stringWithFormat:@"delete from finance"];
+        NSString *sql=[NSString stringWithFormat:@"delete from %@", TABLENAME];
         if ([db executeUpdate:sql]) {
 //            DBLOG(@"delete success");
         }
     }];
+}
+
+- (void)clearTmpCache {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSArray *contents = [fileManager contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
+    for (NSString *str in contents) {
+        NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:str];
+        [fileManager removeItemAtPath:path error:NULL];
+    }
 }
 
 -(void)close{

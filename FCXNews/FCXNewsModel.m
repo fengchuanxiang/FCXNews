@@ -7,6 +7,7 @@
 //
 
 #import "FCXNewsModel.h"
+#import "FCXNewsDBManager.h"
 
 @implementation FCXNewsModel
 {
@@ -25,11 +26,23 @@
         self.source = dict[@"source"];
         self.cType = dict[@"ctype"];
         self.imagesArray = dict[@"images"];
+
         if ([self.imagesArray isKindOfClass:[NSArray class]]) {
             self.images = [self.imagesArray componentsJoinedByString:@","];
+        }else {
+            NSString *image = dict[@"image"];
+            if ([image isKindOfClass:[NSString class]]) {
+                self.imagesArray = @[image];
+                self.images = [self.imagesArray componentsJoinedByString:@","];
+            }else {
+                self.imagesArray = @[];
+                self.images = @"";
+            }
         }
         
         self.content = @"";
+        [[FCXNewsDBManager sharedManager] queryNewsModel:self];
+        
     }
     return self;
 }
@@ -90,6 +103,44 @@
         }
     }
     return showDate;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+//    [aCoder encodeObject:self.images forKey:@"images"];
+    [aCoder encodeObject:self.imagesArray forKey:@"imagesArray"];
+
+    [aCoder encodeObject:self.title forKey:@"title"];
+    [aCoder encodeObject:self.docid forKey:@"docid"];
+    [aCoder encodeObject:self.url forKey:@"url"];
+    [aCoder encodeObject:self.date forKey:@"date"];
+    [aCoder encodeObject:self.source forKey:@"source"];
+    [aCoder encodeObject:self.content forKey:@"content"];
+    [aCoder encodeObject:self.relatedDocs forKey:@"relatedDocs"];
+    [aCoder encodeObject:self.cType forKey:@"cType"];
+    [aCoder encodeObject:self.channelID forKey:@"channelID"];
+    [aCoder encodeBool:self.read forKey:@"read"];
+    [aCoder encodeBool:self.collect forKey:@"collect"];
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super init]) {
+//        self.images = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"images"];
+        
+        self.imagesArray = [aDecoder decodeObjectOfClass:[NSArray class] forKey:@"imagesArray"];
+
+        self.title = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"title"];
+        self.docid = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"docid"];
+        self.url = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"url"];
+        self.date = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"date"];
+        self.source = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"source"];
+        self.content = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"content"];
+        self.relatedDocs = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"relatedDocs"];
+        self.cType = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"cType"];
+        self.channelID = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"channelID"];
+        self.read = [aDecoder decodeBoolForKey:@"read"];
+        self.collect =  [aDecoder decodeBoolForKey:@"collect"];
+    }
+    return self;
 }
 
 @end
