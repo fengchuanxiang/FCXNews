@@ -133,7 +133,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     
     _dataArray = [[NSMutableArray alloc] init];
     if (self.model.content.length < 1) {
-        [[FCXNewsDBManager sharedManager] queryFinanceModel:self.model];
+        [[FCXNewsDBManager sharedManager] queryNewsModel:self.model];
     }
     
     if (self.model.content.length > 0) {
@@ -627,6 +627,9 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
             NSRange range = [content rangeOfString:@"type=thumbnai"];
             while (range.location != NSNotFound) {
                 NSRange range1 = [content rangeOfString:@"&amp;url"];
+                if (range1.location == NSNotFound) {
+                    break;
+                }
                 NSString *subString = [content substringWithRange:NSMakeRange(range.location, range1.location - range.location + 5)];
                 //            NSLog(@"subStr %@", subString);
                 content = [content stringByReplacingOccurrencesOfString:subString withString:[NSString stringWithFormat:@"%d", arc4random()%3+1]];
@@ -653,7 +656,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
                 NSData *data = [NSJSONSerialization dataWithJSONObject:array options:NSJSONWritingPrettyPrinted error:nil];
                 self.model.relatedDocs = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
             }
-            [[FCXNewsDBManager sharedManager] updateFinanceModel:self.model];
+            [[FCXNewsDBManager sharedManager] updateNewsModel:self.model];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
