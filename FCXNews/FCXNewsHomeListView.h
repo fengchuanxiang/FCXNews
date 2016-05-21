@@ -21,9 +21,4 @@
 @property (nonatomic, unsafe_unretained) BOOL needSaveToTmp;
 
 
-- (void)requestData:(BOOL)isRefresh
-          channelID:(NSString *)channelID
-             finish:(void (^)(BOOL hasMore))finish;
-- (void)setupAd;
-
 @end
