@@ -460,14 +460,17 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         if([dict isKindOfClass:[NSDictionary class]]){
             NSString *appkey = dict[@"appkey"];;
             NSString *placementId = dict[@"placementId"];
-            _adDataArray = [NSMutableArray array];
-            _nativeAd = [[GDTNativeAd alloc] initWithAppkey:appkey placementId:placementId];
-            
-            //            _nativeAd = [[GDTNativeAd alloc] initWithAppkey:@"appkey" placementId:@"6050404087998717"];
-            
-            _nativeAd.controller = self.pushNavController;
-            _nativeAd.delegate = self;
-            [_nativeAd loadAd:2];
+            if (!_nativeAd) {
+                _adDataArray = [NSMutableArray array];
+                _nativeAd = [[GDTNativeAd alloc] initWithAppkey:appkey placementId:placementId];
+                _nativeAd.controller = self.pushNavController;
+                _nativeAd.delegate = self;
+                [_nativeAd loadAd:2];
+            }else {
+                [_adDataArray removeAllObjects];
+                _nativeAd.controller = self.pushNavController;
+                [_nativeAd loadAd:2 + _offset/8];
+            }
         }
     }
 }
