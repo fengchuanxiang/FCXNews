@@ -129,7 +129,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         }
         
         if (dataModel.read) {
-            _titleLabel.textColor = [UIColor redColor];
+            _titleLabel.textColor = UICOLOR_FROMRGB(0x828282);
         }else {
             _titleLabel.textColor = [UIColor blackColor];
         }
