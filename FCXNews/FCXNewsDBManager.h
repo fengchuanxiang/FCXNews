@@ -24,6 +24,8 @@
 - (void)saveToTmpCache:(NSArray *)array channelID:(NSString *)channelID;
 - (NSMutableArray *)getNewsModelArrayFromTmpCache:(NSString *)channelID;
 
+- (BOOL)overRefreshTime:(NSString *)channelID;
+
 - (void)clearCache;
 - (void)clearTmpCache;
 

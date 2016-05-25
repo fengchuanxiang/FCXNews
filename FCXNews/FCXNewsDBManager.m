@@ -16,8 +16,8 @@
 
 @implementation FCXNewsDBManager
 {
-    FMDatabaseQueue* _dbQueue;
-    NSMutableDictionary *_dataCountDict;
+    FMDatabaseQueue *_dbQueue;
+    NSMutableArray *_refreshTimeDict;
 }
 
 +(FCXNewsDBManager*)sharedManager {
@@ -33,7 +33,7 @@
 -(id)init
 {
     if (self = [super init]) {
-        _dataCountDict = [[NSMutableDictionary alloc] init];
+        _refreshTimeDict = [[NSMutableDictionary alloc] init];
         //沙盒路径
         NSString * dbPath = NSHomeDirectory();
         dbPath = [dbPath stringByAppendingPathComponent:@"Library/FCXNews.db"];
@@ -136,6 +136,8 @@
         return;
     }
     [NSKeyedArchiver archiveRootObject:array toFile:[NSTemporaryDirectory() stringByAppendingPathComponent:channelID]];
+    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:channelID];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (NSMutableArray *)getNewsModelArrayFromTmpCache:(NSString *)channelID {
@@ -147,6 +149,15 @@
         [self queryNewsModel:model];
     }
     return array;
+}
+
+- (BOOL)overRefreshTime:(NSString *)channelID {
+    NSDate *lastDate = [[NSUserDefaults standardUserDefaults] objectForKey:channelID];
+//    NSLog(@"==== %f\n\n\n", [[NSDate date] timeIntervalSinceDate:lastDate]);
+    if (lastDate && [[NSDate date] timeIntervalSinceDate:lastDate] > 60 * 30) {
+        return YES;
+    }
+    return NO;
 }
 
 - (void)clearCache {

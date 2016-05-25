@@ -722,6 +722,9 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
         resurlt = [resurlt substringToIndex:resurlt.length - 1];
         self.imageArray = [resurlt componentsSeparatedByString:@","];
     }
+    [webView stringByEvaluatingJavaScriptFromString:@"document.body.style.webkitUserSelect='none';"];
+    
+    [webView stringByEvaluatingJavaScriptFromString:@"document.body.style.webkitTouchCallout='none';"];
 }
 
 

@@ -188,6 +188,12 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
 
     if (_channelID) {
         _channelID = channelID;
+        
+        if ([[FCXNewsDBManager sharedManager] overRefreshTime:channelID]) {
+            [_headerView startRefresh];
+            [self setupAd];
+            return;
+        }
 
         NSArray *array = [[FCXNewsDBManager sharedManager] getNewsModelArrayFromTmpCache:channelID];
         if ([array isKindOfClass:[NSArray class]] && array.count > 0) {
