@@ -106,6 +106,8 @@
     _dataArray = dataArray;
     if (self.dataArray.count > 1) {
         _bottomLabel.text = [NSString stringWithFormat:@"   %ld/%ld", self.currentIndex + 1, self.dataArray.count];
+    }else {
+        _bottomLabel.text = nil;
     }
 }
 

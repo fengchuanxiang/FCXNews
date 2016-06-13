@@ -47,6 +47,10 @@
 
         [_scrollView addGestureRecognizer:singleTap];
         [_scrollView addGestureRecognizer:doubleTap];
+        
+        _hud = [[MBProgressHUD alloc] initWithView:self];
+        _hud.removeFromSuperViewOnHide = YES;
+        _hud.mode = MBProgressHUDModeDeterminate;
     }
     return self;
 }
@@ -79,9 +83,13 @@
 - (void)setImageURL:(NSString *)imageURL {
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
     BOOL isCached = [manager cachedImageExistsForURL:[NSURL URLWithString:imageURL]];
+    
+    if (_hud.superview) {//复用问题
+        [_hud hide:NO];
+    }
     if (!isCached) {//没有缓存
-        _hud = [MBProgressHUD showHUDAddedTo:self animated:YES];
-        _hud.mode = MBProgressHUDModeDeterminate;
+        [self addSubview:_hud];
+        [_hud show:YES];
     }
     
     [_imageView sd_setImageWithURL:[NSURL URLWithString:imageURL] placeholderImage:nil options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize){
