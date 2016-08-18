@@ -103,6 +103,9 @@
 }
 
 - (void)setDataArray:(NSArray *)dataArray {
+    if (![dataArray isKindOfClass:[NSArray class]]) {
+        return;
+    }
     _dataArray = dataArray;
     if (self.dataArray.count > 1) {
         _bottomLabel.text = [NSString stringWithFormat:@"   %ld/%ld", self.currentIndex + 1, self.dataArray.count];
@@ -120,6 +123,10 @@
 }
 
 - (void)show {
+    if (_dataArray.count < 1) {
+        return;
+    }
+
     [UIApplication sharedApplication].statusBarHidden = YES;
     UIWindow* window = [UIApplication sharedApplication].keyWindow;
     self.frame = [UIScreen mainScreen].bounds;
