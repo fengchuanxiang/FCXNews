@@ -56,7 +56,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         _recommendLabel.layer.borderWidth = .5;
         _recommendLabel.layer.borderColor = UICOLOR_FROMRGB(0xa5a5a5).CGColor;
         _recommendLabel.clipsToBounds = YES;
-        _recommendLabel.text = @"推广";
+        _recommendLabel.text = [FCXOnlineConfig fcxGetConfigParams:@"advertName" defaultValue:@"推广"];
         _recommendLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:_recommendLabel];
         

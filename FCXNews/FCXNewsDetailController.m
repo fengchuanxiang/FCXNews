@@ -813,7 +813,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
         label.clipsToBounds = YES;
         label.layer.borderColor = UICOLOR_FROMRGB(0x888888).CGColor;
         label.layer.borderWidth = .5;
-        label.text = @"推广";
+        label.text = [FCXOnlineConfig fcxGetConfigParams:@"advertName" defaultValue:@"推广"];
         label.textAlignment = NSTextAlignmentCenter;
         [_adBtn addSubview:label];
         
