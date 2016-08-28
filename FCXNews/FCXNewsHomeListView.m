@@ -52,7 +52,8 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         _defauleImageLable = [[UILabel alloc] initWithFrame:_imageView.frame];
         _defauleImageLable.textAlignment = NSTextAlignmentCenter;
         _defauleImageLable.textColor = [UIColor whiteColor];
-        _defauleImageLable.font =  [UIFont fontWithName:@"Helvetica-Bold" size:20];
+        _defauleImageLable.font =  [UIFont fontWithName:@"Helvetica-Bold" size:18];
+        _defauleImageLable.backgroundColor = UICOLOR_FROMRGB(0xeaeaea);
         _defauleImageLable.text = APP_DISPLAYNAME;
         [self.contentView addSubview:_defauleImageLable];
         
@@ -93,6 +94,9 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
     if (_dataModel != dataModel) {
         _dataModel = dataModel;
         
+        WeakObj(_defauleImageLable);
+        _defauleImageLable.hidden = NO;
+
         if (dataModel.isAd) {//广告
             _recommendLabel.hidden = NO;
             _imageView.hidden = NO;
@@ -104,7 +108,9 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
             }
             _sourceLabel.frame = CGRectMake(120, 62 - 5, SCREEN_WIDTH - 125, 20);
             
-            [_imageView sd_setImageWithURL:[dataModel.adData.properties objectForKey:GDTNativeAdDataKeyImgUrl] placeholderImage:[UIImage imageNamed:@"defaultimage_list"]];
+            [_imageView sd_setImageWithURL:[dataModel.adData.properties objectForKey:GDTNativeAdDataKeyImgUrl] placeholderImage:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                _defauleImageLableWeak.hidden = YES;
+            }];
             _titleLabel.text = _dataModel.title;
             _sourceLabel.text = [dataModel.adData.properties objectForKey:GDTNativeAdDataKeyTitle];
             _dateLabel.text = nil;
@@ -116,11 +122,14 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         if (dataModel.imagesArray.count > 0) {//有图片
             _imageView.hidden = NO;
             _recommendLabel.hidden = YES;
-            [_imageView sd_setImageWithURL:[NSURL URLWithString:dataModel.imagesArray[0]] placeholderImage:[UIImage imageNamed:@"defaultimage_list"]];
+            [_imageView sd_setImageWithURL:[NSURL URLWithString:dataModel.imagesArray[0]] placeholderImage:nil completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                _defauleImageLableWeak.hidden = YES;
+            }];
             _titleLabel.frame = CGRectMake(120, 12, SCREEN_WIDTH - 125, 50);
             _sourceLabel.frame = CGRectMake(120, 62 - 5, SCREEN_WIDTH - 125, 20);
             
         }else {//无图片
+            _defauleImageLable.hidden = YES;
             _imageView.hidden = YES;
             _recommendLabel.hidden = YES;
             _sourceLabel.frame = CGRectMake(10, 62 - 5, SCREEN_WIDTH - 20, 20);

@@ -503,7 +503,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     NSString *icon = [[infoPlist valueForKeyPath:@"CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles"] lastObject];
     UIImage *image = [UIImage imageNamed:icon];
     
-    UIGraphicsBeginImageContextWithOptions(image.size, NO, 1);
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextAddPath(context, [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, image.size.width, image.size.height) cornerRadius:10].CGPath);
     CGContextClip(context);
