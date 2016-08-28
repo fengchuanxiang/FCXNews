@@ -450,6 +450,10 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
             webView.urlString = dataModel.url;
             webView.admobID = self.admobID;
             webView.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_logo"]];
+            UIViewController *controller = self.pushNavController.viewControllers[0];
+            UIImage *image = [(UIImageView *)controller.navigationItem.titleView image];
+            webView.navigationItem.titleView =[[UIImageView alloc] initWithImage:image];
+
             [self.pushNavController pushViewController:webView animated:YES];
             return;
         }
@@ -464,6 +468,10 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         detailVC.shareRightText = self.shareRightText;
         detailVC.shareRightColor = self.shareRightColor;
         [MobClick event:@"列表点击" label:dataModel.title];
+        UIViewController *controller = self.pushNavController.viewControllers[0];
+        UIImage *image = [(UIImageView *)controller.navigationItem.titleView image];
+        detailVC.navigationItem.titleView =[[UIImageView alloc] initWithImage:image];
+
         [self.pushNavController pushViewController:detailVC animated:YES];
     }
 }

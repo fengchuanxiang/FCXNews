@@ -93,7 +93,9 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = @"返回";
-    self.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_logo"]];
+    UIViewController *controller = self.navigationController.viewControllers[0];
+    UIImage *image = [(UIImageView *)controller.navigationItem.titleView image];
+    self.navigationItem.titleView =[[UIImageView alloc] initWithImage:image];
     
     UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [rightBtn setImage:[UIImage imageNamed:@"nav_more"] forState:UIControlStateNormal];

@@ -20,5 +20,7 @@
 @property (nonatomic, strong) NSString *shareRightText;//!<分享底部右边边文
 @property (nonatomic, strong) UIColor *shareLeftColor;//!<分享底部左边文本颜色
 @property (nonatomic, strong) UIColor *shareRightColor;//!<分享底部右边文本颜色
+@property (nonatomic, strong) UIColor *navTitleColor;;
+
 
 @end
