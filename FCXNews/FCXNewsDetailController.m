@@ -448,32 +448,74 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     UIImage *barImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    UIImage *titleImage = [UIImage imageNamed:@"nav_logo"];
-    UIImage *midImage = [UIImage imageNamed:@"detail_share_title"];
     UIImage *QRImg = [self createQRCodeWithText:[NSString stringWithFormat: @"https://itunes.apple.com/app/id%@", [FCXOnlineConfig fcxGetConfigParams:@"share_AppID" defaultValue:self.appID]] size:150.f];
-    UIImage *logoImage = [UIImage imageNamed:@"detail_share_icon"];
+    UIImage *logoImage = [self createLogoImage];
     
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(SCREEN_WIDTH, totalHeight), NO, scale);
-    [barImage drawInRect:CGRectMake(0, 0, SCREEN_WIDTH, 64)];
-    [titleImage drawInRect:CGRectMake((SCREEN_WIDTH - titleImage.size.width)/2.0, (64 - titleImage.size.height)/2.0, titleImage.size.width, titleImage.size.height)];
+    //内容
     [contentImage drawInRect:CGRectMake(0, 64, SCREEN_WIDTH, _shareWebView.height)];
-    [midImage drawInRect:CGRectMake((SCREEN_WIDTH - midImage.size.width)/2.0, totalHeight - 230, midImage.size.width, midImage.size.height)];
-    [QRImg drawInRect:CGRectMake((SCREEN_WIDTH - 150)/2.0, totalHeight - 230 + 40, 150, 150)];
-    [logoImage drawInRect:CGRectMake((SCREEN_WIDTH - 34)/2.0, totalHeight - 230 + 40 + (150 - 34)/2.0, 34, 34)];
+    //底部上方一行文字
+    NSString *text = [NSString stringWithFormat:@"%@ %@", self.shareLeftText, self.shareRightText];
     
     //设置字体
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
     [style setLineBreakMode:NSLineBreakByCharWrapping];
     [style setAlignment:NSTextAlignmentCenter];
     
-    NSDictionary* dict=@{NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue-Light" size:15], NSForegroundColorAttributeName : UICOLOR_FROMRGB(0xababab),  NSParagraphStyleAttributeName : style};
+    NSDictionary* dict=@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:22], NSForegroundColorAttributeName : [UIColor blackColor],  NSParagraphStyleAttributeName : style};
+    //标题
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:APP_DISPLAYNAME attributes:dict];
+
+    //获得size
+    CGSize strSize = [text sizeWithAttributes:dict];
+    CGFloat marginTop = (44 - strSize.height)/2.0;
+    [attributedString drawInRect:CGRectMake(0, 20 + marginTop, SCREEN_WIDTH, strSize.height)];
+
+    //分享文字
+    attributedString = [[NSMutableAttributedString alloc] initWithString:text];
+    [attributedString addAttribute:NSForegroundColorAttributeName value:self.shareLeftColor range:NSMakeRange(0, self.shareLeftText.length)];
+    [attributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Helvetica-Bold" size:20] range:NSMakeRange(0, self.shareLeftText.length)];
     
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:@"长按或扫描下载" attributes:dict];
+    [attributedString addAttribute:NSForegroundColorAttributeName value:self.shareRightColor range:NSMakeRange(self.shareLeftText.length, text.length - self.shareLeftText.length)];
+    [attributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-Light" size:15] range:NSMakeRange(self.shareLeftText.length, text.length - self.shareLeftText.length)];
+    [attributedString addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, text.length)];
+    
+    [attributedString drawInRect:CGRectMake(0, totalHeight - 230, SCREEN_WIDTH, 24)];
+    
+    [QRImg drawInRect:CGRectMake((SCREEN_WIDTH - 150)/2.0, totalHeight - 230 + 40, 150, 150)];
+    [logoImage drawInRect:CGRectMake((SCREEN_WIDTH - 34)/2.0, totalHeight - 230 + 40 + (150 - 34)/2.0, 34, 34)];
+    
+    dict=@{NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue-Light" size:15], NSForegroundColorAttributeName : UICOLOR_FROMRGB(0xababab),  NSParagraphStyleAttributeName : style};
+    
+    attributedString = [[NSMutableAttributedString alloc] initWithString:@"长按或扫描下载" attributes:dict];
     [attributedString drawInRect:CGRectMake(0, totalHeight - 30, SCREEN_WIDTH, 20)];
     
     UIImage *resultImage=UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
+    return resultImage;
+}
+
+- (UIImage *)createLogoImage {
+    NSDictionary *infoPlist = [[NSBundle mainBundle] infoDictionary];
+    NSString *icon = [[infoPlist valueForKeyPath:@"CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles"] lastObject];
+    UIImage *image = [UIImage imageNamed:icon];
+    
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, 1);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextAddPath(context, [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, image.size.width, image.size.height) cornerRadius:10].CGPath);
+    CGContextClip(context);
+    
+    CGFloat space = 3;
+    UIBezierPath *cornerPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(space, space, image.size.width - space * 2, image.size.height - space * 2) cornerRadius:5];
+    
+    [[UIColor whiteColor] set];
+    UIRectFill(CGRectMake(0, 0, image.size.width, image.size.height));
+    [cornerPath addClip];
+    
+    [image drawInRect:CGRectMake(space, space, image.size.width - 2 * space, image.size.height - 2 * space)];
+    UIImage *resultImage=UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
     return resultImage;
 }
 
@@ -590,6 +632,10 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
         detailVC.admobID = self.admobID;
         detailVC.appID = self.appID;
         detailVC.shareTitle = self.shareTitle;
+        detailVC.shareLeftText = self.shareLeftText;
+        detailVC.shareLeftColor = self.shareLeftColor;
+        detailVC.shareRightText = self.shareRightText;
+        detailVC.shareRightColor = self.shareRightColor;
         [MobClick event:@"详情页热门推荐点击" label:dataModel.title];
         [self.navigationController pushViewController:detailVC animated:YES];
     }
@@ -861,6 +907,22 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
 
 -(void)nativeAdFailToLoad:(NSError *)error {
     DBLOG(@"error %@", error.localizedDescription);
+}
+
+- (NSString *)shareLeftText {
+    return _shareLeftText ? _shareLeftText : APP_DISPLAYNAME;
+}
+
+- (NSString *)shareRightText {
+    return _shareRightText ? _shareRightText : [@"掌握第1手"  stringByAppendingString:APP_DISPLAYNAME];
+}
+
+- (UIColor *)shareLeftColor {
+    return  _shareLeftColor ? _shareLeftColor : [UIColor blackColor];
+}
+
+- (UIColor *)shareRightColor {
+    return _shareRightColor ? _shareRightColor : UICOLOR_FROMRGB(0x5b5b5b);
 }
 
 @end

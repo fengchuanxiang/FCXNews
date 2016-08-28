@@ -30,6 +30,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
     UILabel *_sourceLabel;
     UILabel *_recommendLabel;
     UILabel *_dateLabel;
+    UILabel *_defauleImageLable;
 }
 
 @property (nonatomic, strong)FCXNewsModel *dataModel;
@@ -47,6 +48,13 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         _imageView.contentMode = UIViewContentModeScaleAspectFill;
         _imageView.clipsToBounds = YES;
         [self.contentView addSubview:_imageView];
+        
+        _defauleImageLable = [[UILabel alloc] initWithFrame:_imageView.frame];
+        _defauleImageLable.textAlignment = NSTextAlignmentCenter;
+        _defauleImageLable.textColor = [UIColor whiteColor];
+        _defauleImageLable.font =  [UIFont fontWithName:@"Helvetica-Bold" size:20];
+        _defauleImageLable.text = APP_DISPLAYNAME;
+        [self.contentView addSubview:_defauleImageLable];
         
         _recommendLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, 19, 30, 15)];
         _recommendLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:11];
@@ -451,6 +459,10 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         detailVC.admobID = self.admobID;
         detailVC.appID = self.appID;
         detailVC.shareTitle = self.shareTitle;
+        detailVC.shareLeftText = self.shareLeftText;
+        detailVC.shareLeftColor = self.shareLeftColor;
+        detailVC.shareRightText = self.shareRightText;
+        detailVC.shareRightColor = self.shareRightColor;
         [MobClick event:@"列表点击" label:dataModel.title];
         [self.pushNavController pushViewController:detailVC animated:YES];
     }
