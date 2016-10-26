@@ -92,11 +92,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.view.backgroundColor = [UIColor whiteColor];
-    self.title = @"返回";
-    UIViewController *controller = self.navigationController.viewControllers[0];
-    UIImage *image = [(UIImageView *)controller.navigationItem.titleView image];
-    self.navigationItem.titleView =[[UIImageView alloc] initWithImage:image];
-    
+
     UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [rightBtn setImage:[UIImage imageNamed:@"nav_more"] forState:UIControlStateNormal];
     [rightBtn setImage:[UIImage imageNamed:@"nav_more_h"] forState:UIControlStateHighlighted];
@@ -445,15 +441,18 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     CGRect rect = CGRectMake(0.0f, 0.0f, SCREEN_WIDTH, 64);
     UIGraphicsBeginImageContextWithOptions(rect.size, NO, scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetFillColorWithColor(context, [self.navigationController.navigationBar.barTintColor CGColor]);
+    CGContextSetFillColorWithColor(context, [self.shareNavColor CGColor]);
     CGContextFillRect(context, rect);
     UIImage *barImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
     UIImage *QRImg = [self createQRCodeWithText:[NSString stringWithFormat: @"https://itunes.apple.com/app/id%@", [FCXOnlineConfig fcxGetConfigParams:@"share_AppID" defaultValue:self.appID]] size:150.f];
-    UIImage *logoImage = [self createLogoImage];
+    UIImage *iconImage = self.shareIconImage;
     
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(SCREEN_WIDTH, totalHeight), NO, scale);
+    //导航条
+    [barImage drawInRect:CGRectMake(0, 0, SCREEN_WIDTH, 64)];
+
     //内容
     [contentImage drawInRect:CGRectMake(0, 64, SCREEN_WIDTH, _shareWebView.height)];
     //底部上方一行文字
@@ -464,9 +463,9 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     [style setLineBreakMode:NSLineBreakByCharWrapping];
     [style setAlignment:NSTextAlignmentCenter];
     
-    NSDictionary* dict=@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:22], NSForegroundColorAttributeName : [UIColor blackColor],  NSParagraphStyleAttributeName : style};
+    NSDictionary* dict=@{NSFontAttributeName:[UIFont fontWithName:@"Helvetica-Bold" size:22], NSForegroundColorAttributeName : self.shareNavTitleColor,  NSParagraphStyleAttributeName : style};
     //标题
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:APP_DISPLAYNAME attributes:dict];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.shareNavTitle attributes:dict];
 
     //获得size
     CGSize strSize = [text sizeWithAttributes:dict];
@@ -485,7 +484,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     [attributedString drawInRect:CGRectMake(0, totalHeight - 230, SCREEN_WIDTH, 24)];
     
     [QRImg drawInRect:CGRectMake((SCREEN_WIDTH - 150)/2.0, totalHeight - 230 + 40, 150, 150)];
-    [logoImage drawInRect:CGRectMake((SCREEN_WIDTH - 34)/2.0, totalHeight - 230 + 40 + (150 - 34)/2.0, 34, 34)];
+    [iconImage drawInRect:CGRectMake((SCREEN_WIDTH - 34)/2.0, totalHeight - 230 + 40 + (150 - 34)/2.0, 34, 34)];
     
     dict=@{NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue-Light" size:15], NSForegroundColorAttributeName : UICOLOR_FROMRGB(0xababab),  NSParagraphStyleAttributeName : style};
     
@@ -495,29 +494,6 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     UIImage *resultImage=UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    return resultImage;
-}
-
-- (UIImage *)createLogoImage {
-    NSDictionary *infoPlist = [[NSBundle mainBundle] infoDictionary];
-    NSString *icon = [[infoPlist valueForKeyPath:@"CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles"] lastObject];
-    UIImage *image = [UIImage imageNamed:icon];
-    
-    UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextAddPath(context, [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, image.size.width, image.size.height) cornerRadius:10].CGPath);
-    CGContextClip(context);
-    
-    CGFloat space = 3;
-    UIBezierPath *cornerPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(space, space, image.size.width - space * 2, image.size.height - space * 2) cornerRadius:5];
-    
-    [[UIColor whiteColor] set];
-    UIRectFill(CGRectMake(0, 0, image.size.width, image.size.height));
-    [cornerPath addClip];
-    
-    [image drawInRect:CGRectMake(space, space, image.size.width - 2 * space, image.size.height - 2 * space)];
-    UIImage *resultImage=UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
     return resultImage;
 }
 
@@ -629,6 +605,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
     
     if (_dataArray.count > indexPath.row) {
         FCXNewsModel *dataModel = _dataArray[indexPath.row];
+
         FCXNewsDetailController *detailVC = [[FCXNewsDetailController alloc] init];
         detailVC.model = dataModel;
         detailVC.admobID = self.admobID;
@@ -638,8 +615,26 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
         detailVC.shareLeftColor = self.shareLeftColor;
         detailVC.shareRightText = self.shareRightText;
         detailVC.shareRightColor = self.shareRightColor;
-        [MobClick event:@"详情页热门推荐点击" label:dataModel.title];
+        detailVC.shareNavColor = self.shareNavColor;
+        detailVC.shareNavTitleColor = self.shareNavTitleColor;
+        detailVC.shareNavTitle = self.shareNavTitle;
+        detailVC.shareIconImage = self.shareIconImage;
+        
+        UIView *titleView = self.navigationItem.titleView;
+        if ([titleView isKindOfClass:[UIImageView class]]) {
+            UIImage *image = [(UIImageView *)self.navigationItem.titleView image];
+            detailVC.navigationItem.titleView =[[UIImageView alloc] initWithImage:image];
+        } else {
+            UILabel *titleLabel = (UILabel *)titleView;
+            UILabel *label = [[UILabel alloc] initWithFrame:titleLabel.frame];
+            label.textAlignment = NSTextAlignmentCenter;
+            label.font = titleLabel.font;
+            label.textColor = titleLabel.textColor;
+            label.text = titleLabel.text;
+            detailVC.navigationItem.titleView = label;
+        }
         [self.navigationController pushViewController:detailVC animated:YES];
+        [MobClick event:@"详情页热门推荐点击" label:dataModel.title];
     }
 }
 
@@ -925,6 +920,45 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
 
 - (UIColor *)shareRightColor {
     return _shareRightColor ? _shareRightColor : UICOLOR_FROMRGB(0x5b5b5b);
+}
+
+- (UIColor *)shareNavColor {
+    return _shareNavColor ? _shareNavColor : self.navigationController.navigationBar.barTintColor;
+}
+
+- (UIColor *)shareNavTitleColor {
+    return _shareNavTitleColor ? _shareNavTitleColor : [UIColor blackColor];
+}
+
+- (NSString *)shareNavTitle {
+    return _shareNavTitle ? _shareNavTitle : APP_DISPLAYNAME;
+}
+
+- (UIImage *)shareIconImage {
+    if (_shareIconImage) {
+        return _shareIconImage;
+    }
+    
+    NSDictionary *infoPlist = [[NSBundle mainBundle] infoDictionary];
+    NSString *icon = [[infoPlist valueForKeyPath:@"CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles"] lastObject];
+    UIImage *image = [UIImage imageNamed:icon];
+    
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextAddPath(context, [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, image.size.width, image.size.height) cornerRadius:10].CGPath);
+    CGContextClip(context);
+    
+    CGFloat space = 3;
+    UIBezierPath *cornerPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(space, space, image.size.width - space * 2, image.size.height - space * 2) cornerRadius:5];
+    
+    [[UIColor whiteColor] set];
+    UIRectFill(CGRectMake(0, 0, image.size.width, image.size.height));
+    [cornerPath addClip];
+    
+    [image drawInRect:CGRectMake(space, space, image.size.width - 2 * space, image.size.height - 2 * space)];
+    UIImage *resultImage=UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resultImage;
 }
 
 @end

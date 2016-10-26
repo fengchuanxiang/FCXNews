@@ -458,15 +458,13 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
             FCXWebViewController *webView = [[FCXWebViewController alloc] init];
             webView.urlString = dataModel.url;
             webView.admobID = self.admobID;
-            webView.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_logo"]];
-            UIViewController *controller = self.pushNavController.viewControllers[0];
-            UIImage *image = [(UIImageView *)controller.navigationItem.titleView image];
-            webView.navigationItem.titleView =[[UIImageView alloc] initWithImage:image];
-
+            webView.navigationItem.titleView = self.detailTitleView;
             [self.pushNavController pushViewController:webView animated:YES];
             return;
         }
         
+        [MobClick event:@"列表点击" label:dataModel.title];
+
         FCXNewsDetailController *detailVC = [[FCXNewsDetailController alloc] init];
         detailVC.model = dataModel;
         detailVC.admobID = self.admobID;
@@ -476,11 +474,11 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         detailVC.shareLeftColor = self.shareLeftColor;
         detailVC.shareRightText = self.shareRightText;
         detailVC.shareRightColor = self.shareRightColor;
-        [MobClick event:@"列表点击" label:dataModel.title];
-        UIViewController *controller = self.pushNavController.viewControllers[0];
-        UIImage *image = [(UIImageView *)controller.navigationItem.titleView image];
-        detailVC.navigationItem.titleView =[[UIImageView alloc] initWithImage:image];
-
+        detailVC.shareNavColor = self.shareNavColor;
+        detailVC.shareNavTitleColor = self.shareNavTitleColor;
+        detailVC.shareNavTitle = self.shareNavTitle;
+        detailVC.shareIconImage = self.shareIconImage;
+        detailVC.navigationItem.titleView = self.detailTitleView;
         [self.pushNavController pushViewController:detailVC animated:YES];
     }
 }
