@@ -32,12 +32,17 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = UICOLOR_FROMRGB(0xf5f5f5);
     
+    CGFloat tabBarHeight = 0;
+    if (self.tabBarController) {
+        tabBarHeight = 49;
+    }
+    
     CGFloat adHeight = 0;
-    if ([[FCXOnlineConfig fcxGetConfigParams:@"showAdmob" defaultValue:@"1"] boolValue]) {
+    if ([[FCXOnlineConfig fcxGetConfigParams:@"showAdmobMore" defaultValue:@"0"] boolValue]) {
         adHeight = 50;
     }
     
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64 - adHeight) style:UITableViewStyleGrouped];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64 - adHeight - tabBarHeight) style:UITableViewStyleGrouped];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.rowHeight = 50;
