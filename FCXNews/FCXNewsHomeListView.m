@@ -196,6 +196,21 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
     UIView *footView = [[UIView alloc] init];
     self.tableFooterView = footView;
     [self addRefreshHeaderAndFooter];
+    [self startMonitoring];
+}
+
+- (void)startMonitoring {
+    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
+    [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        if (status > 0 && _dataArray.count < 1) {
+            [self requestData:YES
+                    channelID:self.channelID
+                       finish:^(BOOL hasMore){
+                       }];
+        } else if (_dataArray.count > 0) {
+            [[AFNetworkReachabilityManager sharedManager] stopMonitoring];
+        }
+    }];
 }
 
 - (void)setChannelID:(NSString *)channelID {
