@@ -472,7 +472,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
             
             FCXWebViewController *webView = [[FCXWebViewController alloc] init];
             webView.urlString = dataModel.url;
-            webView.admobID = self.admobID;
+            webView.admobID = [FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:self.admobID];
             webView.navigationItem.titleView = self.detailTitleView;
             [self.pushNavController pushViewController:webView animated:YES];
             return;
@@ -482,7 +482,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
 
         FCXNewsDetailController *detailVC = [[FCXNewsDetailController alloc] init];
         detailVC.model = dataModel;
-        detailVC.admobID = self.admobID;
+        detailVC.admobID = [FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:self.admobID];
         detailVC.appID = self.appID;
         detailVC.shareTitle = self.shareTitle;
         detailVC.shareLeftText = self.shareLeftText;

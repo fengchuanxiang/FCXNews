@@ -350,7 +350,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     [btn defaultControlEventsWithHandler:^(UIButton *button) {
         FCXWebViewController *webView = [[FCXWebViewController alloc] init];
         webView.urlString = weakSelf.model.url;
-        webView.admobID = self.admobID;
+        webView.admobID = [FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:self.admobID];
         webView.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_logo"]];
         [weakSelf.navigationController pushViewController:webView animated:YES];
     }];
@@ -608,7 +608,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
 
         FCXNewsDetailController *detailVC = [[FCXNewsDetailController alloc] init];
         detailVC.model = dataModel;
-        detailVC.admobID = self.admobID;
+        detailVC.admobID = [FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:self.admobID];
         detailVC.appID = self.appID;
         detailVC.shareTitle = self.shareTitle;
         detailVC.shareLeftText = self.shareLeftText;
