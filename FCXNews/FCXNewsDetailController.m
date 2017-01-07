@@ -21,7 +21,7 @@
 #import "FCXWebViewController.h"
 #import "FCXDefine.h"
 #import "FCXOnlineConfig.h"
-#import "MobClick.h"
+#import "UMMobClick/MobClick.h"
 
 static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
 #define BGCOLOR UICOLOR_FROMRGB(0xf7f7f7)

@@ -17,7 +17,7 @@
 #import "FCXRefreshHeaderView.h"
 #import "FCXNewsDetailController.h"
 #import "FCXDefine.h"
-#import "MobClick.h"
+#import "UMMobClick/MobClick.h"
 #import "FCXOnlineConfig.h"
 #import "FCXWebViewController.h"
 

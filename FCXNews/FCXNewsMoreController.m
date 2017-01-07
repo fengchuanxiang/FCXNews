@@ -15,7 +15,7 @@
 #import "FCXNewsDBManager.h"
 #import "FCXDefine.h"
 #import "FCXOnlineConfig.h"
-#import "MobClick.h"
+#import "UMMobClick/MobClick.h"
 
 
 @interface FCXNewsMoreController () <UITableViewDelegate, UITableViewDataSource>
