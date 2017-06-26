@@ -125,7 +125,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
         [_shareWebView loadRequest:request];
         
         [self setupAd];
-        [FCXRating startRating:self.appID];
+        [FCXRating startRating:self.appID finish:nil];
         return;
     }
     
@@ -170,7 +170,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     }
     
     [self setupAd];
-    [FCXRating startRating:self.appID];
+    [FCXRating startRating:self.appID finish:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
