@@ -17,7 +17,6 @@
 @implementation FCXNewsDBManager
 {
     FMDatabaseQueue *_dbQueue;
-    NSMutableArray *_refreshTimeDict;
 }
 
 +(FCXNewsDBManager*)sharedManager {
@@ -33,11 +32,9 @@
 -(id)init
 {
     if (self = [super init]) {
-        _refreshTimeDict = [[NSMutableDictionary alloc] init];
         //沙盒路径
         NSString * dbPath = NSHomeDirectory();
         dbPath = [dbPath stringByAppendingPathComponent:@"Library/FCXNews.db"];
-//        DBLOG(@"======== %@", dbPath);
         _dbQueue = [FMDatabaseQueue databaseQueueWithPath:dbPath];
         
         [_dbQueue inDatabase:^(FMDatabase *db) {
@@ -46,9 +43,6 @@
             
             //    执行语句，创建user
             [db executeUpdate:creatTableSql];
-//            BOOL createUserTable = [db executeUpdate:creatTableSql];
-//            NSLog(@"createUserTable success = %d", createUserTable);
-            
         }];
     }
     
@@ -84,8 +78,7 @@
 - (void)updateNewsModel:(FCXNewsModel *)model {
     [_dbQueue inDatabase:^(FMDatabase *db) {
         NSString *sql=[NSString stringWithFormat:@"UPDATE %@ set content = '%@', url = '%@', relatedDocs = '%@', read = %d, collect = %d  WHERE docid = '%@'", TABLENAME, model.content, model.url, model.relatedDocs, model.read, model.collect, model.docid];
-        BOOL update = [db executeUpdate:sql];
-//        DBLOG(@"update %d", update);
+        [db executeUpdate:sql];
     }];
 }
 
@@ -140,7 +133,7 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (NSMutableArray *)getNewsModelArrayFromTmpCache:(NSString *)channelID {
+- (NSArray *)getNewsModelArrayFromTmpCache:(NSString *)channelID {
     NSArray *array = [NSKeyedUnarchiver unarchiveObjectWithFile:[NSTemporaryDirectory() stringByAppendingPathComponent:channelID]];
     if (![array isKindOfClass:[NSArray class]]) {
         return nil;
@@ -153,7 +146,6 @@
 
 - (BOOL)overRefreshTime:(NSString *)channelID {
     NSDate *lastDate = [[NSUserDefaults standardUserDefaults] objectForKey:channelID];
-//    NSLog(@"==== %f\n\n\n", [[NSDate date] timeIntervalSinceDate:lastDate]);
     if (lastDate && [[NSDate date] timeIntervalSinceDate:lastDate] > 60 * 30) {
         return YES;
     }

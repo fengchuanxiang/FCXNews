@@ -22,7 +22,7 @@
 - (NSMutableArray *)getNewsModelArray:(NSInteger)offset channelID:(NSString *)channelID;
 
 - (void)saveToTmpCache:(NSArray *)array channelID:(NSString *)channelID;
-- (NSMutableArray *)getNewsModelArrayFromTmpCache:(NSString *)channelID;
+- (NSArray *)getNewsModelArrayFromTmpCache:(NSString *)channelID;
 
 - (BOOL)overRefreshTime:(NSString *)channelID;
 

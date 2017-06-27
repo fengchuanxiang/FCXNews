@@ -14,6 +14,10 @@
     NSDate *_transDate;
 }
 
++ (BOOL)supportsSecureCoding {
+    return YES;
+}
+
 - (FCXNewsModel *)initWithDict:(NSDictionary *)dict {
     if (!dict || ![dict isKindOfClass:[NSDictionary class]]) {
         return nil;
