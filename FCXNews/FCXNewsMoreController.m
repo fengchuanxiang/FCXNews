@@ -10,11 +10,11 @@
 #import "UMFeedback.h"
 #import "SDImageCache.h"
 #import "FCXShareManager.h"
-#import "FCXRating.h"
+#import "SKRating.h"
 #import "MBProgressHUD.h"
 #import "FCXNewsDBManager.h"
 #import "FCXDefine.h"
-#import "FCXOnlineConfig.h"
+#import "SKOnlineConfig.h"
 #import "UMMobClick/MobClick.h"
 
 
@@ -38,7 +38,7 @@
     }
     
     CGFloat adHeight = 0;
-    if ([[FCXOnlineConfig fcxGetConfigParams:@"showAdmobMore" defaultValue:@"0"] boolValue]) {
+    if ([[SKOnlineConfig getConfigParams:@"showAdmobMore" defaultValue:@"0"] boolValue]) {
         adHeight = 50;
     }
     
@@ -165,7 +165,7 @@
         {
             if(indexPath.row == 0){//去App Store给鲨鱼相机评分
                 [MobClick event:@"设置" label:@"评分"];
-                [FCXRating goRating:self.appID];
+                [SKRating goRating:self.appID];
             }else if (indexPath.row == 1){//意见反馈
                 [MobClick event:@"设置" label:@"意见反馈"];
                 //                [self.navigationController pushViewController:[UMFeedback feedbackViewController]

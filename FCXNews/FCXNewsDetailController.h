@@ -25,6 +25,8 @@
 @property (nonatomic, strong) UIColor *shareNavTitleColor;//!<分享出去导航条的标题颜色
 @property (nonatomic, strong) NSString *shareNavTitle;//!<分享出去导航条的标题
 @property (nonatomic, strong) UIImage *shareIconImage;//!<分享出去中间的icon
+@property (nonatomic, copy) NSString *ratingKey;
+
 
 
 @end

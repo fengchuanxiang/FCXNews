@@ -18,7 +18,8 @@ Pod::Spec.new do |s|
   s.resources = "FCXPictureBrowing/*.png", "FCXRefreshView/*.png"
 
   s.dependency "FMDB"
-  s.dependency 'AFNetworking', '~> 3.0.4'
+  #s.dependency 'AFNetworking', '~> 3.1.0'
+
   s.dependency "MBProgressHUD"
 
 end

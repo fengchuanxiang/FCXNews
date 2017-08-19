@@ -18,7 +18,7 @@
 #import "FCXNewsDetailController.h"
 #import "FCXDefine.h"
 #import "UMMobClick/MobClick.h"
-#import "FCXOnlineConfig.h"
+#import "SKOnlineConfig.h"
 #import "FCXWebViewController.h"
 
 static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIdentifier";
@@ -65,7 +65,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         _recommendLabel.layer.borderWidth = .5;
         _recommendLabel.layer.borderColor = UICOLOR_FROMRGB(0xa5a5a5).CGColor;
         _recommendLabel.clipsToBounds = YES;
-        _recommendLabel.text = [FCXOnlineConfig fcxGetConfigParams:@"advertName" defaultValue:@"推广"];
+        _recommendLabel.text = [SKOnlineConfig getConfigParams:@"advertName" defaultValue:@"推广"];
         _recommendLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:_recommendLabel];
         
@@ -139,7 +139,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         _titleLabel.text = dataModel.title;
         _dateLabel.text = _dataModel.showDate;
         
-        if ([[FCXOnlineConfig fcxGetConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
+        if ([[SKOnlineConfig getConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
             _sourceLabel.text = dataModel.source;
         }else {
             _sourceLabel.text = APP_DISPLAYNAME;
@@ -468,11 +468,11 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         
         if ([dataModel.cType isKindOfClass:[NSString class]] &&
             [dataModel.cType isEqualToString:@"video"] &&
-            [[FCXOnlineConfig fcxGetConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
+            [[SKOnlineConfig getConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
             
             FCXWebViewController *webView = [[FCXWebViewController alloc] init];
             webView.urlString = dataModel.url;
-            webView.admobID = [FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:self.admobID];
+            webView.admobID = [SKOnlineConfig getConfigParams:@"AdmobID" defaultValue:self.admobID];
             webView.navigationItem.titleView = self.detailTitleView;
             [self.pushNavController pushViewController:webView animated:YES];
             return;
@@ -482,7 +482,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
 
         FCXNewsDetailController *detailVC = [[FCXNewsDetailController alloc] init];
         detailVC.model = dataModel;
-        detailVC.admobID = [FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:self.admobID];
+        detailVC.admobID = [SKOnlineConfig getConfigParams:@"AdmobID" defaultValue:self.admobID];
         detailVC.appID = self.appID;
         detailVC.shareTitle = self.shareTitle;
         detailVC.shareLeftText = self.shareLeftText;
@@ -499,11 +499,11 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
 }
 
 - (void)setupAd {
-    _showAd = [[FCXOnlineConfig fcxGetConfigParams:@"showGDT" defaultValue:@"0"] boolValue];
+    _showAd = [[SKOnlineConfig getConfigParams:@"showGDT" defaultValue:@"0"] boolValue];
     //    _showAd = NO;
     if (_showAd) {
         
-        NSString *paramsString = [FCXOnlineConfig fcxGetConfigParams:@"GDT_Info"];
+        NSString *paramsString = [SKOnlineConfig getConfigParams:@"GDT_Info"];
         NSDictionary *dict  = [NSJSONSerialization JSONObjectWithData:[paramsString dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableLeaves error:nil];
         if([dict isKindOfClass:[NSDictionary class]]){
             NSString *appkey = dict[@"appkey"];;

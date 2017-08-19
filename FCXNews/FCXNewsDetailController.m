@@ -10,7 +10,7 @@
 #import "AFNetWorking.h"
 #import "FCXNewsDBManager.h"
 #import "GDTNativeAd.h"
-#import "FCXRating.h"
+#import "SKRating.h"
 #import "UIImageView+WebCache.h"
 #import "FCXPictureBrowingView.h"
 #import "UIVIew+Frame.h"
@@ -20,7 +20,7 @@
 #import "UIButton+Block.h"
 #import "FCXWebViewController.h"
 #import "FCXDefine.h"
-#import "FCXOnlineConfig.h"
+#import "SKOnlineConfig.h"
 #import "UMMobClick/MobClick.h"
 
 static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
@@ -118,14 +118,14 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     _shareWebView.delegate = self;
     _shareWebView.dataDetectorTypes = UIDataDetectorTypeNone;
     
-    if ([[FCXOnlineConfig fcxGetConfigParams:@"detail_showH5" defaultValue:@"0"] isEqualToString:@"1"]) {
+    if ([[SKOnlineConfig getConfigParams:@"detail_showH5" defaultValue:@"0"] isEqualToString:@"1"]) {
         
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:self.model.url]];
         [_webView loadRequest:request];
         [_shareWebView loadRequest:request];
         
         [self setupAd];
-        [FCXRating startRating:self.appID finish:nil];
+        [SKRating startRating:self.appID apppKey:_ratingKey controller:self finish:nil];
         return;
     }
     
@@ -140,7 +140,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
             
             NSString *content = self.model.content;
             NSString *source;
-            if ([[FCXOnlineConfig fcxGetConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
+            if ([[SKOnlineConfig getConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
                 source = self.model.source;
             }else {
                 source = APP_DISPLAYNAME;
@@ -170,7 +170,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     }
     
     [self setupAd];
-    [FCXRating startRating:self.appID finish:nil];
+    [SKRating startRating:self.appID apppKey:_ratingKey controller:self finish:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -335,7 +335,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
 
 - (void)addBottom:(UIView *)superView {
     
-    if (![[FCXOnlineConfig fcxGetConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
+    if (![[SKOnlineConfig getConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
         return;
     }
     
@@ -350,7 +350,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     [btn defaultControlEventsWithHandler:^(UIButton *button) {
         FCXWebViewController *webView = [[FCXWebViewController alloc] init];
         webView.urlString = weakSelf.model.url;
-        webView.admobID = [FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:self.admobID];
+        webView.admobID = [SKOnlineConfig getConfigParams:@"AdmobID" defaultValue:self.admobID];
         webView.navigationItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"nav_logo"]];
         [weakSelf.navigationController pushViewController:webView animated:YES];
     }];
@@ -446,7 +446,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     UIImage *barImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    UIImage *QRImg = [self createQRCodeWithText:[NSString stringWithFormat: @"https://itunes.apple.com/app/id%@", [FCXOnlineConfig fcxGetConfigParams:@"share_AppID" defaultValue:self.appID]] size:150.f];
+    UIImage *QRImg = [self createQRCodeWithText:[NSString stringWithFormat: @"https://itunes.apple.com/app/id%@", [SKOnlineConfig getConfigParams:@"share_AppID" defaultValue:self.appID]] size:150.f];
     UIImage *iconImage = self.shareIconImage;
     
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(SCREEN_WIDTH, totalHeight), NO, scale);
@@ -608,7 +608,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
 
         FCXNewsDetailController *detailVC = [[FCXNewsDetailController alloc] init];
         detailVC.model = dataModel;
-        detailVC.admobID = [FCXOnlineConfig fcxGetConfigParams:@"AdmobID" defaultValue:self.admobID];
+        detailVC.admobID = [SKOnlineConfig getConfigParams:@"AdmobID" defaultValue:self.admobID];
         detailVC.appID = self.appID;
         detailVC.shareTitle = self.shareTitle;
         detailVC.shareLeftText = self.shareLeftText;
@@ -661,7 +661,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
             NSString *date = dict[@"date"];
             date = [FCXNewsModel getShowDateString:date];
             NSString *source;
-            if ([[FCXOnlineConfig fcxGetConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
+            if ([[SKOnlineConfig getConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
                 source = dict[@"source"];
             }else {
                 source =  [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"];
@@ -799,10 +799,10 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
 }
 
 - (void)setupAd {
-    BOOL showAd = [[FCXOnlineConfig fcxGetConfigParams:@"showGDT" defaultValue:@"0"] boolValue];
+    BOOL showAd = [[SKOnlineConfig getConfigParams:@"showGDT" defaultValue:@"0"] boolValue];
     if (showAd) {
         
-        NSString *paramsString = [FCXOnlineConfig fcxGetConfigParams:@"GDT_Info"];
+        NSString *paramsString = [SKOnlineConfig getConfigParams:@"GDT_Info"];
         if (!paramsString) {
             paramsString = @"";
         }
@@ -856,7 +856,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
         label.clipsToBounds = YES;
         label.layer.borderColor = UICOLOR_FROMRGB(0x888888).CGColor;
         label.layer.borderWidth = .5;
-        label.text = [FCXOnlineConfig fcxGetConfigParams:@"advertName" defaultValue:@"推广"];
+        label.text = [SKOnlineConfig getConfigParams:@"advertName" defaultValue:@"推广"];
         label.textAlignment = NSTextAlignmentCenter;
         [_adBtn addSubview:label];
         
