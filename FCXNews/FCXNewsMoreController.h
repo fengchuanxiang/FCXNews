@@ -15,5 +15,7 @@
 @property (nonatomic, strong) NSString *shareTitle;//!<第三方平台显示分享的标题
 @property (nonatomic, strong) NSString *shareContent;//!<第三方平台显示分享的内容
 
+@property (nonatomic, copy) NSString *feedbackKey;//意见反馈key
+
 
 @end

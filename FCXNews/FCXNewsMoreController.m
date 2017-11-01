@@ -7,7 +7,6 @@
 //
 
 #import "FCXNewsMoreController.h"
-#import "UMFeedback.h"
 #import "SDImageCache.h"
 #import "FCXShareManager.h"
 #import "SKRating.h"
@@ -16,7 +15,7 @@
 #import "FCXDefine.h"
 #import "SKOnlineConfig.h"
 #import "UMMobClick/MobClick.h"
-
+#import "SKFeedbackController.h"
 
 @interface FCXNewsMoreController () <UITableViewDelegate, UITableViewDataSource>
 {
@@ -34,7 +33,7 @@
     
     CGFloat tabBarHeight = 0;
     if (self.tabBarController) {
-        tabBarHeight = 49;
+        tabBarHeight = TabBar_Height;
     }
     
     CGFloat adHeight = 0;
@@ -42,7 +41,7 @@
         adHeight = 50;
     }
     
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64 - adHeight - tabBarHeight) style:UITableViewStyleGrouped];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - Nav_StatusBar_Height - adHeight - tabBarHeight) style:UITableViewStyleGrouped];
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.rowHeight = 50;
@@ -170,16 +169,19 @@
                 [MobClick event:@"设置" label:@"意见反馈"];
                 //                [self.navigationController pushViewController:[UMFeedback feedbackViewController]
                 //                                                     animated:YES];
-                [self presentViewController:[UMFeedback feedbackModalViewController] animated:YES completion:nil];
+                SKFeedbackController *feedbackVC = [[SKFeedbackController alloc] initWithAppKey:_feedbackKey uuid:nil];
+                [self.navigationController pushViewController:feedbackVC animated:YES];
+
             }else if (indexPath.row == 2){//清除缓存
                 
                 MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
-                hud.labelText = @"清除中...";
-                hud.labelColor = [UIColor whiteColor];
-                hud.backgroundColor = [UIColor colorWithWhite:0 alpha:.8];
+                hud.label.text = @"清除中...";
+                hud.label.textColor = [UIColor whiteColor];
+                hud.bezelView.color = [UIColor colorWithWhite:0 alpha:.7];
                 // Will look best, if we set a minimum size.
                 hud.minSize = CGSizeMake(150.f, 100.f);
-                
+                hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+
                 [[FCXNewsDBManager sharedManager] clearCache];
                 
                 [[SDImageCache sharedImageCache] clearDiskOnCompletion:^{
@@ -190,10 +192,11 @@
                         UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
                         hud.customView = imageView;
                         hud.mode = MBProgressHUDModeCustomView;
-                        hud.labelText = @"清理完毕";
-                        hud.labelColor = [UIColor whiteColor];
+                        hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+                        hud.label.text = @"清理完毕";
+                        hud.label.textColor = [UIColor whiteColor];
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                            [hud hide:YES];
+                            [hud hideAnimated:YES];
                             [tableView reloadData];
                         });
                         

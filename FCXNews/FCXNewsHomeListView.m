@@ -222,7 +222,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
         _channelID = channelID;
         
         if ([[FCXNewsDBManager sharedManager] overRefreshTime:channelID]) {
-            [_headerView startRefresh];
+            [_headerView autoRefresh];
             [self setupAd];
             return;
         }

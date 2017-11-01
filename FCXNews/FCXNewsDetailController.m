@@ -103,7 +103,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
     self.navigationItem.rightBarButtonItem = rightItem;
     
-    _webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64)];
+    _webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - Nav_StatusBar_Height)];
     _webView.backgroundColor = UICOLOR_FROMRGB(0xf7f7f7);
     _webView.delegate = self;
     _webView.userInteractionEnabled = YES;
@@ -113,7 +113,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     _webView.dataDetectorTypes = UIDataDetectorTypeNone;
     [self.view addSubview:_webView];
     
-    _shareWebView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64)];
+    _shareWebView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - Nav_StatusBar_Height)];
     _shareWebView.backgroundColor = _webView.backgroundColor;
     _shareWebView.delegate = self;
     _shareWebView.dataDetectorTypes = UIDataDetectorTypeNone;
