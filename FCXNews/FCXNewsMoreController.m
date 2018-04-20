@@ -21,6 +21,7 @@
 {
     UITableView *_tableView;
 }
+
 @end
 
 @implementation FCXNewsMoreController
