@@ -82,8 +82,11 @@
 
 - (void)setImageURL:(NSString *)imageURL {
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
-    BOOL isCached = [manager cachedImageExistsForURL:[NSURL URLWithString:imageURL]];
-    
+    __block BOOL isCached = NO;
+    [manager cachedImageExistsForURL:[NSURL URLWithString:imageURL] completion:^(BOOL isInCache) {
+        isCached = isInCache;
+    }];
+//    BOOL isCached = [manager cachedImageExistsForURL:[NSURL URLWithString:imageURL]];
     if (_hud.superview) {//复用问题
         [_hud hide:NO];
     }
@@ -92,10 +95,9 @@
         [_hud show:YES];
     }
     
-    [_imageView sd_setImageWithURL:[NSURL URLWithString:imageURL] placeholderImage:nil options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize){
+    [_imageView sd_setImageWithURL:[NSURL URLWithString:imageURL] placeholderImage:nil options:SDWebImageLowPriority progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
         _hud.progress = ((float)receivedSize)/expectedSize;
-    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
-
+    } completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
         if (!isCached) {
             [_hud hide:YES];
         }
@@ -118,8 +120,36 @@
         }
         
         [_scrollView setZoomScale:_scrollView.minimumZoomScale animated:NO];
-   
     }];
+    
+//    [_imageView sd_setImageWithURL:[NSURL URLWithString:imageURL] placeholderImage:nil options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize){
+//        _hud.progress = ((float)receivedSize)/expectedSize;
+//    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL){
+//
+//        if (!isCached) {
+//            [_hud hide:YES];
+//        }
+//        if (!image || !_imageView.image) {
+//            return ;
+//        }
+//        _imageView.frame = _scrollView.bounds;
+//        
+//        CGFloat Rw = _scrollView.frame.size.width/image.size.width;
+//        CGFloat Rh = _scrollView.frame.size.height/image.size.height;
+//        CGFloat ratio = MIN(Rw, Rh);
+//        
+//        if (Rw > 1 && Rh > 1) {
+//            _scrollView.minimumZoomScale = ratio;
+//            _scrollView.maximumZoomScale = MAX(ratio + 2, MAX(Rw, Rh));
+//        }else {
+//            _scrollView.minimumZoomScale = MIN(ratio, 1/ratio);
+//            CGFloat ratio = MAX(Rw, Rh);
+//            _scrollView.maximumZoomScale = MAX(MAX(ratio, 1/ratio), 2);
+//        }
+//        
+//        [_scrollView setZoomScale:_scrollView.minimumZoomScale animated:NO];
+//   
+//    }];
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {

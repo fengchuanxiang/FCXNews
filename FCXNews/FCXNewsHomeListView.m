@@ -17,9 +17,9 @@
 #import "FCXRefreshHeaderView.h"
 #import "FCXNewsDetailController.h"
 #import "FCXDefine.h"
-#import "UMMobClick/MobClick.h"
 #import "SKOnlineConfig.h"
 #import "FCXWebViewController.h"
+#import "SKA.h"
 
 static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIdentifier";
 
@@ -339,7 +339,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
     int count = 10;
     
     NSString *urlStr = [NSString stringWithFormat:@"http://o.go2yd.com/open-api/caijing/channel?appid=%@&nonce=%@&timestamp=%d&secretkey=%@&channel_id=%@&offset=%d&count=%d", appid, nonce, timestamp, secretkey, self.channelID, _offset, count];
-    DBLOG(@"url %@", urlStr);
+    DBLog(@"url %@", urlStr);
     urlStr = [urlStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
@@ -348,7 +348,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
     [manager GET:urlStr parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        DBLOG(@"respon %@", responseObject);
+        DBLog(@"respon %@", responseObject);
         NSArray *result = responseObject[@"result"];
         BOOL hasMore = YES;
         if ([result isKindOfClass:[NSArray class]]) {
@@ -453,7 +453,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
             if (_adDataArray.count > row) {
                 FCXNewsModel *model = _adDataArray[row];
                 [model.nativeAd clickAd:model.adData];
-                [MobClick event:@"列表点击" label:[model.adData.properties objectForKey:GDTNativeAdDataKeyTitle]];
+                [SKA event:@"列表点击" label:[model.adData.properties objectForKey:GDTNativeAdDataKeyTitle]];
                 return;
             }
         }
@@ -478,7 +478,7 @@ static NSString *const FCXNewsHomeListCellIdentifier = @"FCXNewsHomeListCellIden
             return;
         }
         
-        [MobClick event:@"列表点击" label:dataModel.title];
+        [SKA event:@"列表点击" label:dataModel.title];
 
         FCXNewsDetailController *detailVC = [[FCXNewsDetailController alloc] init];
         detailVC.model = dataModel;

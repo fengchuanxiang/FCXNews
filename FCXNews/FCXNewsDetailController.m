@@ -15,13 +15,12 @@
 #import "FCXPictureBrowingView.h"
 #import "UIVIew+Frame.h"
 #import "WXApi.h"
-#import <TencentOpenAPI/QQApiInterface.h>
 #import "FCXShareManager.h"
 #import "UIButton+Block.h"
 #import "FCXWebViewController.h"
 #import "FCXDefine.h"
 #import "SKOnlineConfig.h"
-#import "UMMobClick/MobClick.h"
+#import "SKA.h"
 
 static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
 #define BGCOLOR UICOLOR_FROMRGB(0xf7f7f7)
@@ -93,15 +92,15 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.view.backgroundColor = [UIColor whiteColor];
 
-    UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [rightBtn setImage:[UIImage imageNamed:@"nav_more"] forState:UIControlStateNormal];
-    [rightBtn setImage:[UIImage imageNamed:@"nav_more_h"] forState:UIControlStateHighlighted];
-    rightBtn.frame = CGRectMake(0, 0, 60, 44);
-    rightBtn.tag = 666;
-    rightBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 25, 0, 0);
-    [rightBtn addTarget:self action:@selector(shareAction:) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
-    self.navigationItem.rightBarButtonItem = rightItem;
+//    UIButton *rightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [rightBtn setImage:[UIImage imageNamed:@"nav_more"] forState:UIControlStateNormal];
+//    [rightBtn setImage:[UIImage imageNamed:@"nav_more_h"] forState:UIControlStateHighlighted];
+//    rightBtn.frame = CGRectMake(0, 0, 60, 44);
+//    rightBtn.tag = 666;
+//    rightBtn.imageEdgeInsets = UIEdgeInsetsMake(0, 25, 0, 0);
+//    [rightBtn addTarget:self action:@selector(shareAction:) forControlEvents:UIControlEventTouchUpInside];
+//    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:rightBtn];
+//    self.navigationItem.rightBarButtonItem = rightItem;
     
     _webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - Nav_StatusBar_Height)];
     _webView.backgroundColor = UICOLOR_FROMRGB(0xf7f7f7);
@@ -125,7 +124,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
         [_shareWebView loadRequest:request];
         
         [self setupAd];
-        [SKRating startRating:self.appID apppKey:_ratingKey controller:self finish:nil];
+//        [SKRating startRating:self.appID apppKey:_ratingKey controller:self finish:nil];
         return;
     }
     
@@ -170,7 +169,7 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     }
     
     [self setupAd];
-    [SKRating startRating:self.appID apppKey:_ratingKey controller:self finish:nil];
+//    [SKRating startRating:self.appID apppKey:_ratingKey controller:self finish:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -192,16 +191,14 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     _tableView.layer.borderColor = _tableView.separatorColor.CGColor;
     _tableView.layer.borderWidth = .5;
     _tableView.separatorInset = UIEdgeInsetsMake(0, 10, 0, 0);
-    if ([_tableView respondsToSelector:@selector(layoutMargins)]) {
-        _tableView.layoutMargins = UIEdgeInsetsMake(0, 10, 0, 0);
-    }
+    _tableView.layoutMargins = UIEdgeInsetsMake(0, 10, 0, 0);
     [_tableView registerClass:[FCXNewsDetailCell class] forCellReuseIdentifier:FCXDetailCellIdentifier];
     [_webView.scrollView addSubview:_tableView];
     
-    _bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, 230)];
+    _bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, 230 - 120 - 20)];
     _bottomView.backgroundColor = _webView.backgroundColor;
-    [self addLine:_bottomView];
-    [self addShareButtons:_bottomView];
+//    [self addLine:_bottomView];
+//    [self addShareButtons:_bottomView];
     [self addBottom:_bottomView];
     
     [_webView.scrollView addSubview:_bottomView];
@@ -299,7 +296,8 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
                 break;
             case 2:
             {//QQ
-                if ([QQApiInterface isQQInstalled]) {
+                Class cls = NSClassFromString(@"QQApiInterface");
+                if (cls && [cls isQQInstalled]) {
                     i++;
                     shareButton = [self createShareButtonWithFrame:buttonFrame
                                                                tag:FCXSharePlatformQQ
@@ -336,10 +334,12 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
 - (void)addBottom:(UIView *)superView {
     
     if (![[SKOnlineConfig getConfigParams:@"showSource" defaultValue:@"0"] boolValue]) {
+        _bottomView.height = 10;
         return;
     }
     
-    CGFloat top = 120 + 30;
+    CGFloat top = 120 + 30 - 120 - 20;
+    top = 5;
     
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     btn.frame = CGRectMake(10, top, 130-2, 44);
@@ -398,6 +398,10 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     return button;
 }
 
+- (BOOL)isQQInstalled {
+    return NO;
+}
+
 #pragma mark - 分享
 
 -(void)shareAction:(UIButton *)button {
@@ -409,26 +413,27 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     
     if (button.tag == FCXSharePlatformWXSession) {
         [shareManager shareToWXSession];
-        [MobClick event:@"详情页分享" label:[NSString stringWithFormat:@"微信-%@", self.model.title]];
+        [SKA event:@"详情页分享" label:[NSString stringWithFormat:@"微信-%@", self.model.title]];
     }else if (button.tag == FCXSharePlatformQQ) {
         [shareManager shareToQQ];
-        [MobClick event:@"详情页分享" label:[NSString stringWithFormat:@"QQ-%@", self.model.title]];
+        [SKA event:@"详情页分享" label:[NSString stringWithFormat:@"QQ-%@", self.model.title]];
     }else if (button.tag == FCXSharePlatformWXTimeline) {
         [shareManager shareToWXTimeline];
-        [MobClick event:@"详情页分享" label:[NSString stringWithFormat:@"朋友圈-%@", self.model.title]];
+        [SKA event:@"详情页分享" label:[NSString stringWithFormat:@"朋友圈-%@", self.model.title]];
     }else if(button.tag == FCXSharePlatformSina) {
         [shareManager shareToSina];
-        [MobClick event:@"详情页分享" label:[NSString stringWithFormat:@"新浪-%@", self.model.title]];
+        [SKA event:@"详情页分享" label:[NSString stringWithFormat:@"新浪-%@", self.model.title]];
     }else {
-        [shareManager showImageShare];
-        [MobClick event:@"详情页分享" label:@"更多"];
+//        [shareManager showImageShare];
+        [shareManager showActivityShare];
+        [SKA event:@"详情页分享" label:@"更多"];
     }
 }
 
 - (UIImage *)getShareImage {
     CGFloat scale = [UIScreen mainScreen].scale;
     
-    CGFloat totalHeight = MAX(SCREEN_HEIGHT, 64 + _webView.scrollView.contentSize.height + 260);
+    CGFloat totalHeight = MAX(SCREEN_HEIGHT, 64 + _webView.scrollView.contentSize.height + 260 - 230);
     _shareWebView.height = totalHeight - 64;
     
     //内容
@@ -446,8 +451,8 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     UIImage *barImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    UIImage *QRImg = [self createQRCodeWithText:[NSString stringWithFormat: @"https://itunes.apple.com/app/id%@", [SKOnlineConfig getConfigParams:@"share_AppID" defaultValue:self.appID]] size:150.f];
-    UIImage *iconImage = self.shareIconImage;
+//    UIImage *QRImg = [self createQRCodeWithText:[NSString stringWithFormat: @"https://itunes.apple.com/app/id%@", [SKOnlineConfig getConfigParams:@"share_AppID" defaultValue:self.appID]] size:150.f];
+//    UIImage *iconImage = self.shareIconImage;
     
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(SCREEN_WIDTH, totalHeight), NO, scale);
     //导航条
@@ -473,23 +478,23 @@ static NSString *const FCXDetailCellIdentifier = @"FCXDetailCellIdentifier";
     [attributedString drawInRect:CGRectMake(0, 20 + marginTop, SCREEN_WIDTH, strSize.height)];
 
     //分享文字
-    attributedString = [[NSMutableAttributedString alloc] initWithString:text];
-    [attributedString addAttribute:NSForegroundColorAttributeName value:self.shareLeftColor range:NSMakeRange(0, self.shareLeftText.length)];
-    [attributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Helvetica-Bold" size:20] range:NSMakeRange(0, self.shareLeftText.length)];
+//    attributedString = [[NSMutableAttributedString alloc] initWithString:text];
+//    [attributedString addAttribute:NSForegroundColorAttributeName value:self.shareLeftColor range:NSMakeRange(0, self.shareLeftText.length)];
+//    [attributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Helvetica-Bold" size:20] range:NSMakeRange(0, self.shareLeftText.length)];
+//
+//    [attributedString addAttribute:NSForegroundColorAttributeName value:self.shareRightColor range:NSMakeRange(self.shareLeftText.length, text.length - self.shareLeftText.length)];
+//    [attributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-Light" size:15] range:NSMakeRange(self.shareLeftText.length, text.length - self.shareLeftText.length)];
+//    [attributedString addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, text.length)];
+//
+//    [attributedString drawInRect:CGRectMake(0, totalHeight - 230, SCREEN_WIDTH, 24)];
     
-    [attributedString addAttribute:NSForegroundColorAttributeName value:self.shareRightColor range:NSMakeRange(self.shareLeftText.length, text.length - self.shareLeftText.length)];
-    [attributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-Light" size:15] range:NSMakeRange(self.shareLeftText.length, text.length - self.shareLeftText.length)];
-    [attributedString addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, text.length)];
+//    [QRImg drawInRect:CGRectMake((SCREEN_WIDTH - 150)/2.0, totalHeight - 230 + 40, 150, 150)];
+//    [iconImage drawInRect:CGRectMake((SCREEN_WIDTH - 34)/2.0, totalHeight - 230 + 40 + (150 - 34)/2.0, 34, 34)];
     
-    [attributedString drawInRect:CGRectMake(0, totalHeight - 230, SCREEN_WIDTH, 24)];
-    
-    [QRImg drawInRect:CGRectMake((SCREEN_WIDTH - 150)/2.0, totalHeight - 230 + 40, 150, 150)];
-    [iconImage drawInRect:CGRectMake((SCREEN_WIDTH - 34)/2.0, totalHeight - 230 + 40 + (150 - 34)/2.0, 34, 34)];
-    
-    dict=@{NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue-Light" size:15], NSForegroundColorAttributeName : UICOLOR_FROMRGB(0xababab),  NSParagraphStyleAttributeName : style};
-    
-    attributedString = [[NSMutableAttributedString alloc] initWithString:@"长按或扫描下载" attributes:dict];
-    [attributedString drawInRect:CGRectMake(0, totalHeight - 30, SCREEN_WIDTH, 20)];
+//    dict=@{NSFontAttributeName:[UIFont fontWithName:@"HelveticaNeue-Light" size:15], NSForegroundColorAttributeName : UICOLOR_FROMRGB(0xababab),  NSParagraphStyleAttributeName : style};
+//
+//    attributedString = [[NSMutableAttributedString alloc] initWithString:@"长按或扫描下载" attributes:dict];
+//    [attributedString drawInRect:CGRectMake(0, totalHeight - 30, SCREEN_WIDTH, 20)];
     
     UIImage *resultImage=UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -634,7 +639,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
             detailVC.navigationItem.titleView = label;
         }
         [self.navigationController pushViewController:detailVC animated:YES];
-        [MobClick event:@"详情页热门推荐点击" label:dataModel.title];
+        [SKA event:@"详情页热门推荐点击" label:dataModel.title];
     }
 }
 
@@ -650,7 +655,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
     [manager GET:urlStr parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        DBLOG(@"respon %@", responseObject);
+        DBLog(@"respon %@", responseObject);
         
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -841,7 +846,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
         [_webView.scrollView addSubview:_adBtn];
         
         [_adBtn defaultControlEventsWithHandler:^(UIButton *button) {
-            [MobClick event:@"详情页" label:@"点击广告"];
+            [SKA event:@"详情页" label:@"点击广告"];
             [_nativeAd clickAd:weakSelf.adData];
         }];
         
@@ -903,7 +908,7 @@ void ProviderReleaseData (void *info, const void *data, size_t size){
 
 
 -(void)nativeAdFailToLoad:(NSError *)error {
-    DBLOG(@"error %@", error.localizedDescription);
+    DBLog(@"error %@", error.localizedDescription);
 }
 
 - (NSString *)shareLeftText {

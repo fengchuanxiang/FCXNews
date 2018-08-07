@@ -14,8 +14,8 @@
 #import "FCXNewsDBManager.h"
 #import "FCXDefine.h"
 #import "SKOnlineConfig.h"
-#import "UMMobClick/MobClick.h"
 #import "SKFeedbackController.h"
+#import "SKA.h"
 
 @interface FCXNewsMoreController () <UITableViewDelegate, UITableViewDataSource>
 {
@@ -148,7 +148,7 @@
     switch (indexPath.section) {
         case 0:
         {//推荐财经头条给好友
-            [MobClick event:@"设置" label:@"邀请好友"];
+            [SKA event:@"设置" label:@"邀请好友"];
             FCXShareManager *shareManager = [FCXShareManager sharedManager];
             shareManager.presentedController = self;
             shareManager.shareTitle = self.shareTitle;
@@ -158,16 +158,18 @@
             NSString *icon = [[infoPlist valueForKeyPath:@"CFBundleIcons.CFBundlePrimaryIcon.CFBundleIconFiles"] lastObject];
             shareManager.shareImage = [UIImage imageNamed:icon];
             
-            [shareManager showInviteFriendsShareView];
+            shareManager.shareType = FCXShareTypeDefault;
+            [shareManager showActivityShare];
+//            [shareManager showInviteFriendsShareView];
         }
             break;
         case 1:
         {
             if(indexPath.row == 0){//去App Store给鲨鱼相机评分
-                [MobClick event:@"设置" label:@"评分"];
+                [SKA event:@"设置" label:@"评分"];
                 [SKRating goRating:self.appID];
             }else if (indexPath.row == 1){//意见反馈
-                [MobClick event:@"设置" label:@"意见反馈"];
+                [SKA event:@"设置" label:@"意见反馈"];
                 //                [self.navigationController pushViewController:[UMFeedback feedbackViewController]
                 //                                                     animated:YES];
                 SKFeedbackController *feedbackVC = [[SKFeedbackController alloc] initWithAppKey:_feedbackKey uuid:nil];
